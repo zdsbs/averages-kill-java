@@ -1,56 +1,32 @@
 package org.abm.averageskill;
 
-import org.abm.averageskill.Lists.F;
-
 public class WorkOrder {
 	private final int totalWorkUnits;
 	private int completedWork;
-	private boolean allTiersHaveCompletedWorkingOnThis = false;
+	private boolean totallyDone = false;
 
 	public WorkOrder(int totalWorkUnits) {
 		this.totalWorkUnits = totalWorkUnits;
 	}
 
-	public boolean workCompletedForTheTier() {
+	public boolean isWorkCompletedForTheTier() {
 		return totalWorkUnits <= completedWork;
+	}
+
+	public boolean isTotallyDone() {
+		return totallyDone;
+	}
+
+	public void markAsTotallyDone() {
+		totallyDone = true;
 	}
 
 	public void complete(int completedWork) {
 		this.completedWork += completedWork;
 	}
 
-	public boolean haveAllTiersHaveCompletedWorkingOnThis() {
-		return allTiersHaveCompletedWorkingOnThis;
-	}
-
-	public void markAllTiersHaveCompletedWorkingOnThis() {
-		allTiersHaveCompletedWorkingOnThis = true;
-	}
-
-	public static F<WorkOrder, Boolean> isNotComplete() {
-		return new F<WorkOrder, Boolean>() {
-
-			@Override
-			public Boolean f(WorkOrder a) {
-				return !a.workCompletedForTheTier();
-			}
-		};
-	}
-
-	public static F<WorkOrder, Boolean> isComplete() {
-		return new F<WorkOrder, Boolean>() {
-
-			@Override
-			public Boolean f(WorkOrder a) {
-				return a.workCompletedForTheTier();
-			}
-
-		};
-	}
-
-	@Override
-	public String toString() {
-		return "[totalWorkUnits=" + totalWorkUnits + ", completedWork=" + completedWork + ", allTiersHaveCompletedWorkingOnThis=" + allTiersHaveCompletedWorkingOnThis + "]";
+	public void clearWorkDone() {
+		completedWork = 0;
 	}
 
 }

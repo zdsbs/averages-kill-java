@@ -1,10 +1,12 @@
 package org.abm.averageskill;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 public class AveragesKill {
-	private final List<AgentTier> tiers = new ArrayList<AgentTier>();
+	private final List<Tier> tiers = new ArrayList<Tier>();
 	private final int maxNumberOfTicks;
 
 	AveragesKill() {
@@ -19,11 +21,12 @@ public class AveragesKill {
 		int timeTook = 0;
 		initializeTiers(agents);
 
-		while (!allWorkOrders.haveAllTiersHaveCompletedWorkingOnThis() && timeTook < maxNumberOfTicks) {
-			List<WorkOrder> needsWork = allWorkOrders.notComplete();
-			for (AgentTier tierTicker : tiers) {
-				tierTicker.addWork(needsWork);
-				needsWork = tierTicker.tickTier();
+		List<WorkOrder> workForTheTier = allWorkOrders.getAll();
+		Deque<WorkOrder> unclaimedWork = new ArrayDeque<WorkOrder>(workForTheTier);
+		while (!allWorkOrders.isAllWorkTotallyDone() && timeTook < maxNumberOfTicks) {
+			for (Tier tier : tiers) {
+				tier.addUnclaimedWork(unclaimedWork);
+				unclaimedWork = tier.tick();
 			}
 			timeTook++;
 		}
@@ -31,11 +34,12 @@ public class AveragesKill {
 	}
 
 	private void initializeTiers(Agents[] agents) {
-		for (Agents agentTier : agents) {
-			AgentTier tickerDelegatesToAgents = new AgentTier();
-			tickerDelegatesToAgents.setAgents(agentTier);
-			tiers.add(tickerDelegatesToAgents);
+		for (int i = 0; i < agents.length - 1; i++) {
+			Tier tier = new Tier(agents[i].allAgents());
+			tiers.add(tier);
 		}
+
+		tiers.add(new LastTier(agents[agents.length - 1].allAgents()));
 	}
 
 }

@@ -17,7 +17,7 @@ public class Agent {
 		return new F<Agent, Boolean>() {
 			@Override
 			public Boolean f(Agent a) {
-				return a.workOrder != null && !a.workOrder.workCompletedForTheTier();
+				return a.workOrder != null && !a.workOrder.isWorkCompletedForTheTier();
 			}
 		};
 	}
@@ -36,15 +36,46 @@ public class Agent {
 			@Override
 			public Boolean f(Agent a) {
 				if (a.workOrder != null) {
-					return a.workOrder.workCompletedForTheTier();
+					return a.workOrder.isWorkCompletedForTheTier();
 				}
 				return false;
 			}
 		};
 	}
 
-	public void markAllTiersHaveCompletedWorkingOnThis() {
-		workOrder.markAllTiersHaveCompletedWorkingOnThis();
-		workOrder = null;
+	public static F<Agent, Boolean> finished() {
+		return new F<Agent, Boolean>() {
+
+			@Override
+			public Boolean f(Agent a) {
+				return a.isFinished();
+			}
+
+		};
 	}
+
+	@Override
+	public String toString() {
+		return "workOrder=" + workOrder;
+	}
+
+	public boolean isFinished() {
+		if (workOrder == null) {
+			return false;
+		}
+		return workOrder.isWorkCompletedForTheTier();
+	}
+
+	public WorkOrder removeWork() {
+		WorkOrder workOrder = this.workOrder;
+		this.workOrder = null;
+		workOrder.clearWorkDone();
+		return workOrder;
+	}
+
+	public void removeWorkTotallyFinish() {
+		this.workOrder.markAsTotallyDone();
+		this.workOrder = null;
+	}
+
 }
