@@ -12,8 +12,8 @@ public class Agents {
 	private final List<Agent> agentsAtTiers;
 	private final List<WorkOrder> currentWorkInTier = new ArrayList<WorkOrder>();
 
-	public Agents(List<Agent> agentsAtTiers) {
-		this.agentsAtTiers = agentsAtTiers;
+	public Agents(List<? extends Agent> agentsAtTiers) {
+		this.agentsAtTiers = new ArrayList<Agent>(agentsAtTiers);
 	}
 
 	public List<Agent> getAgentsThatPassWorkOn() {

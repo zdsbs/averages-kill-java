@@ -14,15 +14,24 @@ public class LastTier extends Tier {
 		super(initialAgents);
 	}
 
+	public LastTier(List<Agent> initAgents, int tierIndex, Log log) {
+		super(initAgents, tierIndex, log);
+	}
+
 	@Override
 	public Deque<WorkOrder> tick() {
 		List<Agent> free = filter(hasNoWork(), allAgents);
 		List<Agent> working = filter(hasWork(), allAgents);
 		List<Agent> finished = filter(Agent.finished(), allAgents);
 
+		agentsPrint();
 		assignUnclaimedWork(free);
+		agentsPrint();
 		doWork(working);
-		return totallyFinish(finished);
+		agentsPrint();
+		Deque<WorkOrder> totallyFinish = totallyFinish(finished);
+		agentsPrint();
+		return totallyFinish;
 	}
 
 	private Deque<WorkOrder> totallyFinish(List<Agent> finished) {

@@ -13,9 +13,18 @@ import java.util.List;
 public class Tier {
 	final List<Agent> allAgents = new ArrayList<Agent>();
 	private final Deque<WorkOrder> unclaimedWork = new ArrayDeque<WorkOrder>();
+	int tierIndex;
+	Log log;
+
+	public Tier(List<Agent> initialAgents, int tierIndex, Log log) {
+		allAgents.addAll(initialAgents);
+		this.tierIndex = tierIndex;
+		this.log = log;
+	}
 
 	public Tier(List<Agent> initialAgents) {
 		allAgents.addAll(initialAgents);
+		this.tierIndex = 0;
 	}
 
 	public void addUnclaimedWork(Deque<WorkOrder> unclaimedWork) {
@@ -26,9 +35,36 @@ public class Tier {
 		List<Agent> free = filter(hasNoWork(), allAgents);
 		List<Agent> working = filter(hasWork(), allAgents);
 
+		agentsPrint();
 		assignUnclaimedWork(free);
+		agentsPrint();
 		doWork(working);
-		return finishedWork(filter(finished(), allAgents));
+		agentsPrint();
+		Deque<WorkOrder> finishedWork = finishedWork(filter(finished(), allAgents));
+		agentsPrint();
+		return finishedWork;
+	}
+
+	void agentsPrint() {
+		if (log == null) {
+			return;
+		}
+
+		String output = tabs() + "w:" + unclaimedWork.size() + "\ta:";
+		for (Agent agent : allAgents) {
+			if (Agent.hasWork().f(agent)) {
+				output += agent.workOrder.amountComplete();
+			}
+		}
+		log.log(output);
+	}
+
+	private String tabs() {
+		String output = "";
+		for (int i = 0; i < tierIndex; i++) {
+			output += "\t";
+		}
+		return output;
 	}
 
 	Deque<WorkOrder> finishedWork(List<Agent> finished) {

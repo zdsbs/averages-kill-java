@@ -44,18 +44,18 @@ public class AveragesKillTest {
 	}
 
 	@Test
-	public void tiers_agents_one_work_order() throws Exception {
+	public void two_tiers_agents_one_work_order() throws Exception {
 		AveragesKill simulation = new AveragesKill(200000);
-		WorkOrders workOrders = new WorkOrders(workOrders(10000, 2));
+		WorkOrders workOrders = new WorkOrders(workOrders(1, 2));
 
 		Agents tier1 = new Agents(asList(new Agent()));
 		Agents tier2 = new Agents(asList(new Agent()));
 		int timeTook = simulation.run(workOrders, tier1, tier2);
-		assertEquals(5, timeTook);
+		assertEquals(6, timeTook);
 	}
 
 	@Test
-	public void tiers_agents_one_work_order_with_10() throws Exception {
+	public void two_tiers_agents_one_work_order_with_10() throws Exception {
 		AveragesKill simulation = new AveragesKill(200);
 		WorkOrders workOrders = new WorkOrders(new WorkOrder(10));
 
@@ -63,6 +63,17 @@ public class AveragesKillTest {
 		Agents tier2 = new Agents(asList(new Agent()));
 		int timeTook = simulation.run(workOrders, tier1, tier2);
 		assertEquals(22, timeTook);
+	}
+
+	@Test
+	public void two_tiers_with_one_agent_each_two_work_size_two() throws Exception {
+		AveragesKill simulation = new AveragesKill(200);
+		WorkOrders workOrders = new WorkOrders(new WorkOrder(2), new WorkOrder(2));
+
+		Agents tier1 = new Agents(asList(new Agent()));
+		Agents tier2 = new Agents(asList(new Agent()));
+		int timeTook = simulation.run(workOrders, tier1, tier2);
+		assertEquals(10, timeTook);
 	}
 
 	@Test
@@ -116,11 +127,23 @@ public class AveragesKillTest {
 	@Test
 	public void foo() throws Exception {
 		AveragesKill simulation = new AveragesKill(2000000000);
-		WorkOrder[] workOrders2 = workOrders(100, 10);
+		WorkOrder[] workOrders2 = workOrders(1000, 10);
 		WorkOrders workOrders = new WorkOrders(workOrders2);
 
 		Agents tier1 = new Agents(asList(new Agent()));
 		Agents tier2 = new Agents(asList(new Agent()));
+		int timeTook = simulation.run(workOrders, tier1, tier2);
+		System.out.println(timeTook);
+	}
+
+	@Test
+	public void foo_rand() throws Exception {
+		AveragesKill simulation = new AveragesKill(2000000000);
+		WorkOrder[] workOrders2 = workOrders(1000, 10);
+		WorkOrders workOrders = new WorkOrders(workOrders2);
+
+		Agents tier1 = new Agents(asList(new AgentRandom()));
+		Agents tier2 = new Agents(asList(new AgentRandom()));
 		int timeTook = simulation.run(workOrders, tier1, tier2);
 		System.out.println(timeTook);
 	}

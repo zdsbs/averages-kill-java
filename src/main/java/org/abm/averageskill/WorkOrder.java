@@ -1,8 +1,8 @@
 package org.abm.averageskill;
 
 public class WorkOrder {
-	private final int totalWorkUnits;
-	private int completedWork;
+	private final double totalWorkUnits;
+	private float completedWork;
 	private boolean totallyDone = false;
 
 	public WorkOrder(int totalWorkUnits) {
@@ -21,12 +21,16 @@ public class WorkOrder {
 		totallyDone = true;
 	}
 
-	public void complete(int completedWork) {
+	public void complete(double completedWork) {
 		this.completedWork += completedWork;
 	}
 
 	public void clearWorkDone() {
 		completedWork = 0;
+	}
+
+	public int amountComplete() {
+		return (int) completedWork;
 	}
 
 }

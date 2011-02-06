@@ -3,7 +3,7 @@ package org.abm.averageskill;
 import org.abm.averageskill.Lists.F;
 
 public class Agent {
-	private WorkOrder workOrder;
+	WorkOrder workOrder;
 
 	public void recieve(WorkOrder workOrder) {
 		this.workOrder = workOrder;
