@@ -61,17 +61,12 @@ public class AgentsInATierTest {
 	}
 
 	private AgentsInATier oneAgentOneTier() {
-		Agent[][] agentsInTiers = new Agent[1][1];
-		agentsInTiers[0][0] = new Agent();
-		AgentsInATier agents = new AgentsInATier(agentsInTiers);
+		AgentsInATier agents = new AgentsInATier(asList(new Agent()));
 		return agents;
 	}
 
 	private AgentsInATier twoAgentsOneTier() {
-		Agent[][] agentsInTiers = new Agent[1][2];
-		agentsInTiers[0][0] = new Agent();
-		agentsInTiers[0][1] = new Agent();
-		AgentsInATier agents = new AgentsInATier(agentsInTiers);
+		AgentsInATier agents = new AgentsInATier(asList(new Agent(), new Agent()));
 		return agents;
 	}
 

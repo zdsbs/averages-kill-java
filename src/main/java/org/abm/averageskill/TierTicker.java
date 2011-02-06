@@ -1,5 +1,7 @@
 package org.abm.averageskill;
 
+import java.util.List;
+
 public interface TierTicker {
-	public WorkOrders tickTier(AgentsInATier agents, WorkOrders workOrders);
+	public List<WorkOrder> tickTier(AgentsInATier agents, List<WorkOrder> workOrders);
 }

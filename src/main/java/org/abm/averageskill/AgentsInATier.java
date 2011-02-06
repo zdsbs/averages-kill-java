@@ -6,36 +6,26 @@ import static org.abm.averageskill.Agent.haveCompletedTheirWork;
 import static org.abm.averageskill.Lists.filter;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 
 public class AgentsInATier {
-	private final Agent[][] agentsAtTiers;
+	private final List<Agent> agentsAtTiers;
 
-	AgentsInATier(Agent[][] agentsAtTiers) {
+	AgentsInATier(List<Agent> agentsAtTiers) {
 		this.agentsAtTiers = agentsAtTiers;
 	}
 
-	private List<Agent> allAgents() {
-		List<Agent> allAgents = new ArrayList<Agent>();
-		for (Agent[] tier : agentsAtTiers) {
-			allAgents.addAll(Arrays.asList(tier));
-		}
-		return allAgents;
-	}
-
 	public List<Agent> getAgentsThatPassWorkOn() {
-		return filter(haveCompletedTheirWork(), allAgents());
+		return filter(haveCompletedTheirWork(), agentsAtTiers);
 	}
 
 	public List<Agent> getAgentsThatDoSomeWork() {
-		return filter(hasWork(), allAgents());
+		return filter(hasWork(), agentsAtTiers);
 	}
 
 	public List<Agent> getAgentsThatAcceptOrders() {
-		return filter(hasNoWork(), allAgents());
+		return filter(hasNoWork(), agentsAtTiers);
 	}
 
 	public void passOnWork(List<Agent> thatAcceptOrders) {
@@ -60,7 +50,7 @@ public class AgentsInATier {
 		}
 	}
 
-	public WorkOrders getCompletedWork() {
+	public List<WorkOrder> getCompletedWork() {
 		throw new NotYetImplemented();
 	}
 

@@ -14,11 +14,11 @@ public class Simulation {
 		this.maxNumberOfTicks = maxNumberOfTicks;
 	}
 
-	public int run(AgentsInATier agents, WorkOrders workOrders) {
+	public int run(AgentsInATier agents, WorkOrders allWorkOrders) {
 		int timeTook = 0;
-		while (!workOrders.haveAllTiersHaveCompletedWorkingOnThis() && timeTook < maxNumberOfTicks) {
+		while (!allWorkOrders.haveAllTiersHaveCompletedWorkingOnThis() && timeTook < maxNumberOfTicks) {
 
-			ticker.tickTier(agents, workOrders);
+			ticker.tickTier(agents, allWorkOrders.notComplete());
 			timeTook++;
 		}
 		return timeTook;

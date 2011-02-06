@@ -1,5 +1,6 @@
 package org.abm.averageskill;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -16,10 +17,8 @@ public class AveragesKillTest {
 		WorkOrder workOrder = new WorkOrder(0);
 		workOrder.markAllTiersHaveCompletedWorkingOnThis();
 		WorkOrders workOrders = new WorkOrders(workOrder);
-		Agent[][] agentsAtTiers = new Agent[1][1];
-		agentsAtTiers[0][0] = new Agent();
 
-		int timeTook = simulation.run(new AgentsInATier(agentsAtTiers), workOrders);
+		int timeTook = simulation.run(new AgentsInATier(asList(new Agent())), workOrders);
 		assertEquals(0, timeTook);
 	}
 
@@ -30,7 +29,7 @@ public class AveragesKillTest {
 		WorkOrders workOrders = new WorkOrders(new WorkOrder(1));
 		AgentsInATier agents = null;
 		simulation.run(agents, workOrders);
-		verify(ticker).tickTier(agents, workOrders);
+		verify(ticker).tickTier(agents, workOrders.notComplete());
 	}
 
 	@Test
@@ -40,7 +39,7 @@ public class AveragesKillTest {
 		Agent[][] agentsAtTiers = new Agent[1][1];
 		agentsAtTiers[0][0] = new Agent();
 
-		int timeTook = simulation.run(new AgentsInATier(agentsAtTiers), workOrders);
+		int timeTook = simulation.run(new AgentsInATier(asList(new Agent())), workOrders);
 		assertEquals(3, timeTook);
 	}
 
@@ -51,7 +50,7 @@ public class AveragesKillTest {
 		Agent[][] agentsAtTiers = new Agent[1][1];
 		agentsAtTiers[0][0] = new Agent();
 
-		int timeTook = simulation.run(new AgentsInATier(agentsAtTiers), workOrders);
+		int timeTook = simulation.run(new AgentsInATier(asList(new Agent())), workOrders);
 		assertEquals(6, timeTook);
 	}
 
