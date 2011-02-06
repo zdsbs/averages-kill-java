@@ -1,24 +1,24 @@
 package org.abm.averageskill;
 
-
 public class Simulation {
-	private final Ticker ticker;
+	private final TierTicker ticker;
 	private final int maxNumberOfTicks;
 
-	Simulation(Ticker ticker) {
+	Simulation(TierTicker ticker) {
 		this.ticker = ticker;
 		this.maxNumberOfTicks = Integer.MAX_VALUE;
 	}
 
-	Simulation(Ticker ticker, int maxNumberOfTicks) {
+	Simulation(TierTicker ticker, int maxNumberOfTicks) {
 		this.ticker = ticker;
 		this.maxNumberOfTicks = maxNumberOfTicks;
 	}
 
-	public int run(Agents agents, WorkOrders workOrders) {
+	public int run(AgentsInATier agents, WorkOrders workOrders) {
 		int timeTook = 0;
 		while (!workOrders.haveAllTiersHaveCompletedWorkingOnThis() && timeTook < maxNumberOfTicks) {
-			ticker.tick(agents, workOrders);
+
+			ticker.tickTier(agents, workOrders);
 			timeTook++;
 		}
 		return timeTook;

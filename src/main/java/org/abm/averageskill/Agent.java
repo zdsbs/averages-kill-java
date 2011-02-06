@@ -5,7 +5,7 @@ import org.abm.averageskill.Lists.F;
 public class Agent {
 	private WorkOrder workOrder;
 
-	public void getA(WorkOrder workOrder) {
+	public void recieve(WorkOrder workOrder) {
 		this.workOrder = workOrder;
 	}
 
@@ -17,7 +17,7 @@ public class Agent {
 		return new F<Agent, Boolean>() {
 			@Override
 			public Boolean f(Agent a) {
-				return a.workOrder != null;
+				return a.workOrder != null && !a.workOrder.workUnitsAreComplete();
 			}
 		};
 	}
@@ -43,7 +43,8 @@ public class Agent {
 		};
 	}
 
-	public void flagWorkAsComplete() {
+	public void markAllTiersHaveCompletedWorkingOnThis() {
 		workOrder.markAllTiersHaveCompletedWorkingOnThis();
+		workOrder = null;
 	}
 }

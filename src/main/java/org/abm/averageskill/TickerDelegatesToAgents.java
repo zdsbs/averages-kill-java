@@ -1,16 +1,19 @@
 package org.abm.averageskill;
 
-public class TickerDelegatesToAgents implements Ticker {
+import java.util.List;
 
-	// The Winkle - in the same time tick you cannot do all these actions to all agents.
-	// you either need to keep track of which agents have done something in a tick
-	// or you must buffer up the state effects till the end
+public class TickerDelegatesToAgents implements TierTicker {
+
 	@Override
-	public void tick(Agents agents, WorkOrders workOrders) {
-		agents.markCompleteWorkAsCompleted();
-		agents.passOnWork();
-		agents.work();
-		agents.accept(workOrders.notComplete());
-	}
+	public WorkOrders tickTier(AgentsInATier coordination, WorkOrders inComingWorkOrders) {
+		List<Agent> thatPassWorkOn = coordination.getAgentsThatPassWorkOn();
+		List<Agent> thatDoSomeWork = coordination.getAgentsThatDoSomeWork();
+		List<Agent> thatAcceptOrders = coordination.getAgentsThatAcceptOrders();
 
+		coordination.passOnWork(thatPassWorkOn);
+		coordination.doSomeWork(thatDoSomeWork);
+		coordination.acceptOrders(thatAcceptOrders, inComingWorkOrders.notComplete());
+
+		return coordination.getCompletedWork();
+	}
 }
