@@ -12,11 +12,11 @@ public class AgentTest {
 		Agent agent = new Agent();
 		agent.recieve(workOrder);
 		agent.doSomeWork();
-		assertFalse(workOrder.workUnitsAreComplete());
+		assertFalse(workOrder.workCompletedForTheTier());
 		agent.doSomeWork();
-		assertFalse(workOrder.workUnitsAreComplete());
+		assertFalse(workOrder.workCompletedForTheTier());
 		agent.doSomeWork();
-		assertTrue(workOrder.workUnitsAreComplete());
+		assertTrue(workOrder.workCompletedForTheTier());
 	}
 
 	@Test

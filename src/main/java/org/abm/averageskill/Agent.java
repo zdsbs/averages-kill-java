@@ -17,7 +17,7 @@ public class Agent {
 		return new F<Agent, Boolean>() {
 			@Override
 			public Boolean f(Agent a) {
-				return a.workOrder != null && !a.workOrder.workUnitsAreComplete();
+				return a.workOrder != null && !a.workOrder.workCompletedForTheTier();
 			}
 		};
 	}
@@ -36,7 +36,7 @@ public class Agent {
 			@Override
 			public Boolean f(Agent a) {
 				if (a.workOrder != null) {
-					return a.workOrder.workUnitsAreComplete();
+					return a.workOrder.workCompletedForTheTier();
 				}
 				return false;
 			}

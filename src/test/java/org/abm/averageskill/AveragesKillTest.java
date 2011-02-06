@@ -2,8 +2,6 @@ package org.abm.averageskill;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
@@ -13,44 +11,32 @@ public class AveragesKillTest {
 
 	@Test
 	public void when_the_simulation_has_no_work_to_do_it_is_over_immediately() throws Exception {
-		Simulation simulation = new Simulation(mock(TierTicker.class));
+		AveragesKill simulation = new AveragesKill();
 		WorkOrder workOrder = new WorkOrder(0);
 		workOrder.markAllTiersHaveCompletedWorkingOnThis();
 		WorkOrders workOrders = new WorkOrders(workOrder);
 
-		int timeTook = simulation.run(new AgentsInATier(asList(new Agent())), workOrders);
+		int timeTook = simulation.run(workOrders, new Agents(asList(new Agent())));
 		assertEquals(0, timeTook);
 	}
 
 	@Test
-	public void sends_all_work_to_the_ticker() throws Exception {
-		TierTicker ticker = mock(TierTicker.class);
-		Simulation simulation = new Simulation(ticker, 1);
-		WorkOrders workOrders = new WorkOrders(new WorkOrder(1));
-		AgentsInATier agents = null;
-		simulation.run(agents, workOrders);
-		verify(ticker).tickTier(agents, workOrders.notComplete());
-	}
-
-	@Test
 	public void with_one_work_order_that_needs_1_piece_of_work_it_takes_three_time_units() throws Exception {
-		Simulation simulation = new Simulation(new TickerDelegatesToAgents());
+		AveragesKill simulation = new AveragesKill();
 		WorkOrders workOrders = new WorkOrders(new WorkOrder(1));
 		Agent[][] agentsAtTiers = new Agent[1][1];
 		agentsAtTiers[0][0] = new Agent();
 
-		int timeTook = simulation.run(new AgentsInATier(asList(new Agent())), workOrders);
+		int timeTook = simulation.run(workOrders, new Agents(asList(new Agent())));
 		assertEquals(3, timeTook);
 	}
 
 	@Test
 	public void one_agent_two_work_orders() throws Exception {
-		Simulation simulation = new Simulation(new TickerDelegatesToAgents(), 20);
+		AveragesKill simulation = new AveragesKill(20);
 		WorkOrders workOrders = new WorkOrders(new WorkOrder(1), new WorkOrder(1));
-		Agent[][] agentsAtTiers = new Agent[1][1];
-		agentsAtTiers[0][0] = new Agent();
 
-		int timeTook = simulation.run(new AgentsInATier(asList(new Agent())), workOrders);
+		int timeTook = simulation.run(workOrders, new Agents(asList(new Agent())));
 		assertEquals(6, timeTook);
 	}
 

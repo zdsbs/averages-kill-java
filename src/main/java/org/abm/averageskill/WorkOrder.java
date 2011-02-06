@@ -11,7 +11,7 @@ public class WorkOrder {
 		this.totalWorkUnits = totalWorkUnits;
 	}
 
-	public boolean workUnitsAreComplete() {
+	public boolean workCompletedForTheTier() {
 		return totalWorkUnits <= completedWork;
 	}
 
@@ -32,9 +32,25 @@ public class WorkOrder {
 
 			@Override
 			public Boolean f(WorkOrder a) {
-				return !a.workUnitsAreComplete();
+				return !a.workCompletedForTheTier();
 			}
 		};
+	}
+
+	public static F<WorkOrder, Boolean> isComplete() {
+		return new F<WorkOrder, Boolean>() {
+
+			@Override
+			public Boolean f(WorkOrder a) {
+				return a.workCompletedForTheTier();
+			}
+
+		};
+	}
+
+	@Override
+	public String toString() {
+		return "[totalWorkUnits=" + totalWorkUnits + ", completedWork=" + completedWork + ", allTiersHaveCompletedWorkingOnThis=" + allTiersHaveCompletedWorkingOnThis + "]";
 	}
 
 }
