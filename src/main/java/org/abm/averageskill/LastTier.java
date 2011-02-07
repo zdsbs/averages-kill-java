@@ -24,13 +24,9 @@ public class LastTier extends Tier {
 		List<Agent> working = filter(hasWork(), allAgents);
 		List<Agent> finished = filter(Agent.finished(), allAgents);
 
-		agentsPrint();
 		assignUnclaimedWork(free);
-		agentsPrint();
 		doWork(working);
-		agentsPrint();
 		Deque<WorkOrder> totallyFinish = totallyFinish(finished);
-		agentsPrint();
 		return totallyFinish;
 	}
 

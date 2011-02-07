@@ -27,7 +27,6 @@ public class AveragesKill {
 		List<WorkOrder> workForTheTier = allWorkOrders.getAll();
 		Deque<WorkOrder> unclaimedWork = new ArrayDeque<WorkOrder>(workForTheTier);
 		while (!allWorkOrders.isAllWorkTotallyDone() && timeTook < maxNumberOfTicks) {
-			log.log("time: " + timeTook);
 			for (Tier tier : tiers) {
 				tier.addUnclaimedWork(unclaimedWork);
 				unclaimedWork = tier.tick();

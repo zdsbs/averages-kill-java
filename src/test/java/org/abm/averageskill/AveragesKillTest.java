@@ -68,7 +68,7 @@ public class AveragesKillTest {
 	@Test
 	public void two_tiers_with_one_agent_each_two_work_size_two() throws Exception {
 		AveragesKill simulation = new AveragesKill(200);
-		WorkOrders workOrders = new WorkOrders(new WorkOrder(2), new WorkOrder(2));
+		WorkOrders workOrders = new WorkOrders(new WorkOrder(10), new WorkOrder(10));
 
 		Agents tier1 = new Agents(asList(new Agent()));
 		Agents tier2 = new Agents(asList(new Agent()));
@@ -79,7 +79,7 @@ public class AveragesKillTest {
 	@Test
 	public void three_tiers() throws Exception {
 		AveragesKill simulation = new AveragesKill(200);
-		WorkOrders workOrders = new WorkOrders(new WorkOrder(2));
+		WorkOrders workOrders = new WorkOrders(new WorkOrder(10));
 
 		Agents tier1 = new Agents(asList(new Agent()));
 		Agents tier2 = new Agents(asList(new Agent()));

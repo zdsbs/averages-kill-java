@@ -35,13 +35,9 @@ public class Tier {
 		List<Agent> free = filter(hasNoWork(), allAgents);
 		List<Agent> working = filter(hasWork(), allAgents);
 
-		agentsPrint();
 		assignUnclaimedWork(free);
-		agentsPrint();
 		doWork(working);
-		agentsPrint();
 		Deque<WorkOrder> finishedWork = finishedWork(filter(finished(), allAgents));
-		agentsPrint();
 		return finishedWork;
 	}
 
