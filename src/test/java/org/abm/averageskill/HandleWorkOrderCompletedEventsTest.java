@@ -6,15 +6,15 @@ import static org.mockito.Mockito.mock;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
+import java.util.Queue;
 
 import org.junit.Test;
 
 public class HandleWorkOrderCompletedEventsTest {
 	private static final class NotifiableWorkOrderCompletedEventSource implements WorkOrderCompletedEventSource {
 		private final AveragesKill simulationReport;
-		private final Deque<List<WorkOrderCompletedEvent>> events = new ArrayDeque<List<WorkOrderCompletedEvent>>();
+		private final Queue<List<WorkOrderCompletedEvent>> events = new ArrayDeque<List<WorkOrderCompletedEvent>>();
 
 		private NotifiableWorkOrderCompletedEventSource(AveragesKill simulationReport) {
 			this.simulationReport = simulationReport;
@@ -43,12 +43,12 @@ public class HandleWorkOrderCompletedEventsTest {
 			if (events.isEmpty()) {
 				return new ArrayList<HandleWorkOrderCompletedEventsTest.WorkOrderCompletedEvent>();
 			}
-			return events.pop();
+			return events.remove();
 		}
 
 		public void notifyOfCompletedEvent(WorkOrderCompletedEvent... events) {
 			List<WorkOrderCompletedEvent> asList = asList(events);
-			this.events.push(asList);
+			this.events.add(asList);
 		}
 
 	}
@@ -129,6 +129,22 @@ public class HandleWorkOrderCompletedEventsTest {
 		simulationReport.nextEventOccursAt(100);
 		int actualTime = simulationReport.runWithEvents(mock(WorkOrderCompletedEventSource.class));
 		assertEquals(0, actualTime);
+	}
+
+	@Test
+	public void stop_working_when_the_expected_number_of_work_orders_are_completed() throws Exception {
+		int timeout = 20;
+		int expectedNumberOfWorkOrdersToComplete = 2;
+		final AveragesKill simulationReport = new AveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
+
+		NotifiableWorkOrderCompletedEventSource workOrderCompletedEventSource = new NotifiableWorkOrderCompletedEventSource(simulationReport);
+		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(1));
+		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(3));
+		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(10));
+		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(19));
+		int actualTime = simulationReport.runWithEvents(workOrderCompletedEventSource);
+
+		assertEquals(3, actualTime);
 	}
 
 	// WHO KEEPS TRACK OF TIME?

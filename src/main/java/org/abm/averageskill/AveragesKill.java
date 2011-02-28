@@ -15,6 +15,7 @@ public class AveragesKill {
 	private int timeOfLastEvent;
 	private final int expectedNumberOfWorkOrdersToComplete;
 	private int nextEventAt;
+	private int numberOfCompletedWorkItems = 0;
 
 	AveragesKill() {
 		this.maxNumberOfTicks = Integer.MAX_VALUE;
@@ -70,10 +71,14 @@ public class AveragesKill {
 		if (nextEventAt > maxNumberOfTicks) {
 			return true;
 		}
+		if (numberOfCompletedWorkItems >= expectedNumberOfWorkOrdersToComplete) {
+			return true;
+		}
 		return false;
 	}
 
 	public void onWorkOrderCompleted(WorkOrderCompletedEvent event) {
+		this.numberOfCompletedWorkItems++;
 		this.timeOfLastEvent = event.getTicks();
 	}
 
