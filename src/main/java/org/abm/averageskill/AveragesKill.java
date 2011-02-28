@@ -13,14 +13,24 @@ public class AveragesKill {
 	private final int maxNumberOfTicks;
 	private final Log log;
 	private int timeOfLastEvent;
+	private final int expectedNumberOfWorkOrdersToComplete;
+	private int nextEventAt;
 
 	AveragesKill() {
 		this.maxNumberOfTicks = Integer.MAX_VALUE;
+		this.expectedNumberOfWorkOrdersToComplete = -1;
 		this.log = new LogNoOp();
 	}
 
 	AveragesKill(int maxNumberOfTicks) {
 		this.maxNumberOfTicks = maxNumberOfTicks;
+		this.expectedNumberOfWorkOrdersToComplete = -1;
+		this.log = new LogNoOp();
+	}
+
+	public AveragesKill(int timeout, int expectedNumberOfWorkOrdersToComplete) {
+		this.maxNumberOfTicks = timeout;
+		this.expectedNumberOfWorkOrdersToComplete = expectedNumberOfWorkOrdersToComplete;
 		this.log = new LogNoOp();
 	}
 
@@ -50,12 +60,26 @@ public class AveragesKill {
 	}
 
 	public int runWithEvents(WorkOrderCompletedEventSource workOrderCompletedEventSource) {
-		workOrderCompletedEventSource.doWork();
+		while (!done()) {
+			workOrderCompletedEventSource.doWork();
+		}
 		return timeOfLastEvent;
+	}
+
+	private boolean done() {
+		if (nextEventAt > maxNumberOfTicks) {
+			return true;
+		}
+		return false;
 	}
 
 	public void onWorkOrderCompleted(WorkOrderCompletedEvent event) {
 		this.timeOfLastEvent = event.getTicks();
+	}
+
+	// This is curious but it seems mightly convientent
+	public void nextEventOccursAt(int nextEventAt) {
+		this.nextEventAt = nextEventAt;
 	}
 
 }

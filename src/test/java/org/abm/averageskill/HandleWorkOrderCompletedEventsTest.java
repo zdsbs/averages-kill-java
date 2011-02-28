@@ -1,13 +1,58 @@
 package org.abm.averageskill;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
-import java.util.Arrays;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 import org.junit.Test;
 
 public class HandleWorkOrderCompletedEventsTest {
+	private static final class NotifiableWorkOrderCompletedEventSource implements WorkOrderCompletedEventSource {
+		private final AveragesKill simulationReport;
+		private final Deque<List<WorkOrderCompletedEvent>> events = new ArrayDeque<List<WorkOrderCompletedEvent>>();
+
+		private NotifiableWorkOrderCompletedEventSource(AveragesKill simulationReport) {
+			this.simulationReport = simulationReport;
+		}
+
+		@Override
+		public void doWork() {
+			for (WorkOrderCompletedEvent event : getNextEvents()) {
+				simulationReport.onWorkOrderCompleted(event);
+			}
+			simulationReport.nextEventOccursAt(getNextEventTime());
+		}
+
+		private int getNextEventTime() {
+			if (events.isEmpty()) {
+				return Integer.MAX_VALUE;
+			}
+			List<WorkOrderCompletedEvent> nextEvent = events.peek();
+			if (nextEvent.isEmpty()) {
+				return Integer.MAX_VALUE;
+			}
+			return nextEvent.get(0).getTicks();
+		}
+
+		private List<WorkOrderCompletedEvent> getNextEvents() {
+			if (events.isEmpty()) {
+				return new ArrayList<HandleWorkOrderCompletedEventsTest.WorkOrderCompletedEvent>();
+			}
+			return events.pop();
+		}
+
+		public void notifyOfCompletedEvent(WorkOrderCompletedEvent... events) {
+			List<WorkOrderCompletedEvent> asList = asList(events);
+			this.events.push(asList);
+		}
+
+	}
+
 	public static class WorkOrderCompletedEvent {
 		private final int ticks;
 
@@ -40,24 +85,54 @@ public class HandleWorkOrderCompletedEventsTest {
 	@Test
 	public void with_one_work_order_that_signals_completion_early_enough() throws Exception {
 		int timeout = 2;
-		final AveragesKill simulationReport = new AveragesKill(timeout);
+		int expectedNumberOfWorkOrdersToComplete = 1;
+		AveragesKill simulationReport = new AveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
 
-		int actualTime = simulationReport.runWithEvents(new WorkOrderCompletedEventSource() {
-			@Override
-			public void doWork() {
-				// The WOCEvent is in both categories
-				for (WorkOrderCompletedEvent event : receive()) {
-					simulationReport.onWorkOrderCompleted(event);
-				}
-			}
-
-			public List<WorkOrderCompletedEvent> receive() {
-				return Arrays.<WorkOrderCompletedEvent> asList(WorkOrderCompletedEvent.at(1)); // stub
-			}
-		});
+		NotifiableWorkOrderCompletedEventSource workOrderCompletedEventSource = new NotifiableWorkOrderCompletedEventSource(simulationReport);
+		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(1));
+		int actualTime = simulationReport.runWithEvents(workOrderCompletedEventSource);
 
 		assertEquals(1, actualTime);
 	}
+
+	@Test
+	public void completes_when_there_are_no_more_events_even_if_the_work_has_not_been_completed() throws Exception {
+		int timeout = 2;
+		int expectedNumberOfWorkOrdersToComplete = 1;
+		AveragesKill simulationReport = new AveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
+
+		WorkOrderCompletedEventSource workOrderCompletedEventSource = new NotifiableWorkOrderCompletedEventSource(simulationReport);
+		int actualTime = simulationReport.runWithEvents(workOrderCompletedEventSource);
+
+		assertEquals(0, actualTime);
+	}
+
+	@Test
+	public void when_the_time_of_the_next_event_is_after_the_timeout_the_simulation_terminates() throws Exception {
+		int timeout = 2;
+		int expectedNumberOfWorkOrdersToComplete = 2;
+		final AveragesKill simulationReport = new AveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
+
+		NotifiableWorkOrderCompletedEventSource workOrderCompletedEventSource = new NotifiableWorkOrderCompletedEventSource(simulationReport);
+		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(1));
+		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(10));
+		int actualTime = simulationReport.runWithEvents(workOrderCompletedEventSource);
+
+		assertEquals(1, actualTime);
+	}
+
+	@Test
+	public void simulation_ends_when_the_next_event_is_after_the_current_time() throws Exception {
+		int timeout = 2;
+		int expectedNumberOfWorkOrdersToComplete = 2;
+		final AveragesKill simulationReport = new AveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
+		simulationReport.nextEventOccursAt(100);
+		int actualTime = simulationReport.runWithEvents(mock(WorkOrderCompletedEventSource.class));
+		assertEquals(0, actualTime);
+	}
+
+	// WHO KEEPS TRACK OF TIME?
+	// MAYBE PEEK AT THE NEXT TIME OF AN EVENT COMPLETED?
 
 	// There are things out there that can etll me a work orders are complete
 	// and I need to give them a chance to tell me that work orders are
