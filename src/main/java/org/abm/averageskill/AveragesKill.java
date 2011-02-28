@@ -5,10 +5,14 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
+import org.abm.averageskill.HandleWorkOrderCompletedEventsTest.WorkOrderCompletedEvent;
+import org.abm.averageskill.HandleWorkOrderCompletedEventsTest.WorkOrderCompletedEventSource;
+
 public class AveragesKill {
 	private final List<Tier> tiers = new ArrayList<Tier>();
 	private final int maxNumberOfTicks;
 	private final Log log;
+	private int timeOfLastEvent;
 
 	AveragesKill() {
 		this.maxNumberOfTicks = Integer.MAX_VALUE;
@@ -43,6 +47,15 @@ public class AveragesKill {
 		}
 
 		tiers.add(new LastTier(agents[agents.length - 1].allAgents(), agents.length, log));
+	}
+
+	public int runWithEvents(WorkOrderCompletedEventSource workOrderCompletedEventSource) {
+		workOrderCompletedEventSource.doWork();
+		return timeOfLastEvent;
+	}
+
+	public void onWorkOrderCompleted(WorkOrderCompletedEvent event) {
+		this.timeOfLastEvent = event.getTicks();
 	}
 
 }
