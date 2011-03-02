@@ -146,6 +146,11 @@ public class HandleWorkOrderCompletedEventsTest {
 	// I jumped a bit ahead and made NotifiableWorkOrderCompletedEventSource it sort of made my life easier but it's complex - with lots of assumptions
 	// ////////////////////////////
 
+	// ///////////////////////////////////
+	// Why do we keep tests after we've designed the code?
+	// Is the main purpose of testing to help design?
+	// How important is catching regressions?
+	// ///////////////////////////////////
 	// Pay close attentention of all the different permutations of events
 	// do work() - may not fire off events - may fire off multiple events
 
