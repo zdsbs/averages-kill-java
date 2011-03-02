@@ -137,10 +137,14 @@ public class HandleWorkOrderCompletedEventsTest {
 	// actual work orders / agents) (this is nice because it will require a
 	// little more "interesting" work to be done on the reporting side of things
 
+	// ///////////////////
 	// ZDS - Why wouldn't I just make AverageTimeToCompleteWorkOrders a workOrderCompletionListener and make sure AveragesKill sends messages to that interface
 	// why go ahead with the concrete version?
 	// I started (then stopped) the idea of sending event for the start of workOrders because then I'd need to associate events with specific work orders
 	// and that seemed complex, but I have trouble seeing another way around that
+	// How would I allow for different start times of work orders without tracking work order identity??
+	// I jumped a bit ahead and made NotifiableWorkOrderCompletedEventSource it sort of made my life easier but it's complex - with lots of assumptions
+	// ////////////////////////////
 
 	// Pay close attentention of all the different permutations of events
 	// do work() - may not fire off events - may fire off multiple events
