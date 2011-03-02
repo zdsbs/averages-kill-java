@@ -12,7 +12,8 @@ import java.util.Queue;
 import org.junit.Test;
 
 public class HandleWorkOrderCompletedEventsTest {
-	private static final class NotifiableWorkOrderCompletedEventSource implements WorkOrderCompletedEventSource {
+
+	private static final class NotifiableWorkOrderCompletedEventSource implements WorkOrderEventSource {
 		private final AveragesKill simulationReport;
 		private final Queue<List<WorkOrderCompletedEvent>> events = new ArrayDeque<List<WorkOrderCompletedEvent>>();
 
@@ -69,18 +70,6 @@ public class HandleWorkOrderCompletedEventsTest {
 		}
 	}
 
-	public interface WorkOrderCompletedEventSource {
-		void doWork();
-	}
-
-	// Two kinds of events one that events that describe work being done / bob
-	// did some work
-	// the other is information about work being done / simulation ends / work
-	// is completed / etc.
-
-	// events that deterime when the simulation is done
-	// events that describe different stats
-
 	// We're ignoring how work is partition
 	@Test
 	public void with_one_work_order_that_signals_completion_early_enough() throws Exception {
@@ -101,7 +90,7 @@ public class HandleWorkOrderCompletedEventsTest {
 		int expectedNumberOfWorkOrdersToComplete = 1;
 		AveragesKill simulationReport = new AveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
 
-		WorkOrderCompletedEventSource workOrderCompletedEventSource = new NotifiableWorkOrderCompletedEventSource(simulationReport);
+		WorkOrderEventSource workOrderCompletedEventSource = new NotifiableWorkOrderCompletedEventSource(simulationReport);
 		int actualTime = simulationReport.runWithEvents(workOrderCompletedEventSource);
 
 		assertEquals(0, actualTime);
@@ -127,7 +116,7 @@ public class HandleWorkOrderCompletedEventsTest {
 		int expectedNumberOfWorkOrdersToComplete = 2;
 		final AveragesKill simulationReport = new AveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
 		simulationReport.nextEventOccursAt(100);
-		int actualTime = simulationReport.runWithEvents(mock(WorkOrderCompletedEventSource.class));
+		int actualTime = simulationReport.runWithEvents(mock(WorkOrderEventSource.class));
 		assertEquals(0, actualTime);
 	}
 

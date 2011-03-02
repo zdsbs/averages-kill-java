@@ -6,7 +6,6 @@ import java.util.Deque;
 import java.util.List;
 
 import org.abm.averageskill.HandleWorkOrderCompletedEventsTest.WorkOrderCompletedEvent;
-import org.abm.averageskill.HandleWorkOrderCompletedEventsTest.WorkOrderCompletedEventSource;
 
 public class AveragesKill {
 	private final List<Tier> tiers = new ArrayList<Tier>();
@@ -60,7 +59,7 @@ public class AveragesKill {
 		tiers.add(new LastTier(agents[agents.length - 1].allAgents(), agents.length, log));
 	}
 
-	public int runWithEvents(WorkOrderCompletedEventSource workOrderCompletedEventSource) {
+	public int runWithEvents(WorkOrderEventSource workOrderCompletedEventSource) {
 		while (!done()) {
 			workOrderCompletedEventSource.doWork();
 		}
