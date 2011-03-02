@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
+import org.abm.averageskill.AverageTimeToProcessWorkOrdersTest.AverageTimeToProcessAllWorkOrders;
+import org.abm.averageskill.event.WorkOrderCompletedEvent;
 import org.junit.Test;
 
 public class HandleWorkOrderCompletedEventsTest {
@@ -42,7 +44,7 @@ public class HandleWorkOrderCompletedEventsTest {
 
 		private List<WorkOrderCompletedEvent> getNextEvents() {
 			if (events.isEmpty()) {
-				return new ArrayList<HandleWorkOrderCompletedEventsTest.WorkOrderCompletedEvent>();
+				return new ArrayList<WorkOrderCompletedEvent>();
 			}
 			return events.remove();
 		}
@@ -54,28 +56,12 @@ public class HandleWorkOrderCompletedEventsTest {
 
 	}
 
-	public static class WorkOrderCompletedEvent {
-		private final int ticks;
-
-		public WorkOrderCompletedEvent(int ticks) {
-			this.ticks = ticks;
-		}
-
-		public static WorkOrderCompletedEvent at(int ticks) {
-			return new WorkOrderCompletedEvent(ticks);
-		}
-
-		public int getTicks() {
-			return ticks;
-		}
-	}
-
 	// We're ignoring how work is partition
 	@Test
 	public void with_one_work_order_that_signals_completion_early_enough() throws Exception {
 		int timeout = 2;
 		int expectedNumberOfWorkOrdersToComplete = 1;
-		AveragesKill simulationReport = new AveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
+		AveragesKill simulationReport = getAveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
 
 		NotifiableWorkOrderCompletedEventSource workOrderCompletedEventSource = new NotifiableWorkOrderCompletedEventSource(simulationReport);
 		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(1));
@@ -88,7 +74,7 @@ public class HandleWorkOrderCompletedEventsTest {
 	public void completes_when_there_are_no_more_events_even_if_the_work_has_not_been_completed() throws Exception {
 		int timeout = 2;
 		int expectedNumberOfWorkOrdersToComplete = 1;
-		AveragesKill simulationReport = new AveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
+		AveragesKill simulationReport = getAveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
 
 		WorkOrderEventSource workOrderCompletedEventSource = new NotifiableWorkOrderCompletedEventSource(simulationReport);
 		int actualTime = simulationReport.runWithEvents(workOrderCompletedEventSource);
@@ -100,7 +86,7 @@ public class HandleWorkOrderCompletedEventsTest {
 	public void when_the_time_of_the_next_event_is_after_the_timeout_the_simulation_terminates() throws Exception {
 		int timeout = 2;
 		int expectedNumberOfWorkOrdersToComplete = 2;
-		final AveragesKill simulationReport = new AveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
+		final AveragesKill simulationReport = getAveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
 
 		NotifiableWorkOrderCompletedEventSource workOrderCompletedEventSource = new NotifiableWorkOrderCompletedEventSource(simulationReport);
 		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(1));
@@ -114,7 +100,7 @@ public class HandleWorkOrderCompletedEventsTest {
 	public void simulation_ends_when_the_next_event_is_after_the_current_time() throws Exception {
 		int timeout = 2;
 		int expectedNumberOfWorkOrdersToComplete = 2;
-		final AveragesKill simulationReport = new AveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
+		final AveragesKill simulationReport = getAveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
 		simulationReport.nextEventOccursAt(100);
 		int actualTime = simulationReport.runWithEvents(mock(WorkOrderEventSource.class));
 		assertEquals(0, actualTime);
@@ -124,7 +110,7 @@ public class HandleWorkOrderCompletedEventsTest {
 	public void stop_working_when_the_expected_number_of_work_orders_are_completed() throws Exception {
 		int timeout = 20;
 		int expectedNumberOfWorkOrdersToComplete = 2;
-		final AveragesKill simulationReport = new AveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
+		final AveragesKill simulationReport = getAveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
 
 		NotifiableWorkOrderCompletedEventSource workOrderCompletedEventSource = new NotifiableWorkOrderCompletedEventSource(simulationReport);
 		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(1));
@@ -136,9 +122,9 @@ public class HandleWorkOrderCompletedEventsTest {
 		assertEquals(3, actualTime);
 	}
 
-	// WHO KEEPS TRACK OF TIME?
-	// MAYBE PEEK AT THE NEXT TIME OF AN EVENT COMPLETED?
-
+	private AveragesKill getAveragesKill(int timeout, int expectedNumberOfWorkOrdersToComplete) {
+		return new AveragesKill(timeout, expectedNumberOfWorkOrdersToComplete, new AverageTimeToProcessAllWorkOrders());
+	}
 	// There are things out there that can etll me a work orders are complete
 	// and I need to give them a chance to tell me that work orders are
 	// completed
@@ -150,6 +136,11 @@ public class HandleWorkOrderCompletedEventsTest {
 	// Implement average time to complete all work orders (without dealing with
 	// actual work orders / agents) (this is nice because it will require a
 	// little more "interesting" work to be done on the reporting side of things
+
+	// ZDS - Why wouldn't I just make AverageTimeToCompleteWorkOrders a workOrderCompletionListener and make sure AveragesKill sends messages to that interface
+	// why go ahead with the concrete version?
+	// I started (then stopped) the idea of sending event for the start of workOrders because then I'd need to associate events with specific work orders
+	// and that seemed complex, but I have trouble seeing another way around that
 
 	// Pay close attentention of all the different permutations of events
 	// do work() - may not fire off events - may fire off multiple events

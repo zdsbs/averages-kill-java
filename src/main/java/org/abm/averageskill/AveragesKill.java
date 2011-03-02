@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-import org.abm.averageskill.HandleWorkOrderCompletedEventsTest.WorkOrderCompletedEvent;
+import org.abm.averageskill.AverageTimeToProcessWorkOrdersTest.AverageTimeToProcessAllWorkOrders;
+import org.abm.averageskill.event.WorkOrderCompletedEvent;
 
 public class AveragesKill {
 	private final List<Tier> tiers = new ArrayList<Tier>();
@@ -15,6 +16,7 @@ public class AveragesKill {
 	private final int expectedNumberOfWorkOrdersToComplete;
 	private int nextEventAt;
 	private int numberOfCompletedWorkItems = 0;
+	private AverageTimeToProcessAllWorkOrders averageTimeToProcessAllWorkOrders;
 
 	AveragesKill() {
 		this.maxNumberOfTicks = Integer.MAX_VALUE;
@@ -28,9 +30,10 @@ public class AveragesKill {
 		this.log = new LogNoOp();
 	}
 
-	public AveragesKill(int timeout, int expectedNumberOfWorkOrdersToComplete) {
+	public AveragesKill(int timeout, int expectedNumberOfWorkOrdersToComplete, AverageTimeToProcessAllWorkOrders averageTimeToProcessAllWorkOrders) {
 		this.maxNumberOfTicks = timeout;
 		this.expectedNumberOfWorkOrdersToComplete = expectedNumberOfWorkOrdersToComplete;
+		this.averageTimeToProcessAllWorkOrders = averageTimeToProcessAllWorkOrders;
 		this.log = new LogNoOp();
 	}
 
@@ -79,6 +82,7 @@ public class AveragesKill {
 	public void onWorkOrderCompleted(WorkOrderCompletedEvent event) {
 		this.numberOfCompletedWorkItems++;
 		this.timeOfLastEvent = event.getTicks();
+		averageTimeToProcessAllWorkOrders.onWorkOrderCompleted(event);
 	}
 
 	// This is curious but it seems mightly convientent
