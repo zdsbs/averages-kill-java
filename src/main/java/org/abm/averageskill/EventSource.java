@@ -1,6 +1,6 @@
 package org.abm.averageskill;
 
-public interface WorkOrderEventSource {
+public interface EventSource {
 	void doWork();
 
 	int getCurrentTime();

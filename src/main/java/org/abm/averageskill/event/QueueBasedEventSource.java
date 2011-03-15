@@ -7,31 +7,35 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
-import org.abm.averageskill.AveragesKill;
+import org.abm.averageskill.EventSource;
 import org.abm.averageskill.WorkOrderCompletedListener;
-import org.abm.averageskill.WorkOrderEventSource;
+import org.abm.averageskill.WorkOrderCompletionMonitor;
 
-public class NotifiableWorkOrderCompletedEventSource implements WorkOrderEventSource, WorkOrderCompletedListener {
-	private final AveragesKill simulationReport;
+public class QueueBasedEventSource implements EventSource, WorkOrderCompletedListener {
+	private final WorkOrderCompletionMonitor workOrderCompletionMonitor;
 	private final Queue<List<WorkOrderCompletedEvent>> events = new ArrayDeque<List<WorkOrderCompletedEvent>>();
-	private int currentTime = 0;
 	private int timeOfLastEvent = 0;
 	private final int timeout;
 
-	public NotifiableWorkOrderCompletedEventSource(AveragesKill simulationReport, int timeout) {
-		this.simulationReport = simulationReport;
+	public QueueBasedEventSource(WorkOrderCompletionMonitor simulationReport, int timeout) {
+		this.workOrderCompletionMonitor = simulationReport;
 		this.timeout = timeout;
 	}
 
+	// 3-15 re-writing this to be Generic Events is easy except for like 35.
+	// there we only want to send this event to the simupationreport if it's a completion event.
+	// what's the best way to go about this?
+
 	@Override
 	public void doWork() {
+
 		for (WorkOrderCompletedEvent event : popNextEvents()) {
-			currentTime = event.getTicks();
+			int currentTime = event.getTicks();
 			if (currentTime > timeout) {
 				return;
 			}
 			timeOfLastEvent = currentTime;
-			simulationReport.onWorkOrderCompleted(event);
+			workOrderCompletionMonitor.onWorkOrderCompleted(event);
 		}
 	}
 
@@ -57,7 +61,7 @@ public class NotifiableWorkOrderCompletedEventSource implements WorkOrderEventSo
 		if (hasMoreEvents() == false) {
 			return true;
 		}
-		return simulationReport.hasCompletedAllWorkOrders();
+		return workOrderCompletionMonitor.hasCompletedAllWorkOrders();
 	}
 
 	private List<WorkOrderCompletedEvent> popNextEvents() {

@@ -3,7 +3,7 @@ package org.abm.averageskill;
 import static org.junit.Assert.assertEquals;
 
 import org.abm.averageskill.AverageTimeToProcessWorkOrdersTest.AverageTimeToProcessAllWorkOrders;
-import org.abm.averageskill.event.NotifiableWorkOrderCompletedEventSource;
+import org.abm.averageskill.event.QueueBasedEventSource;
 import org.abm.averageskill.event.WorkOrderCompletedEvent;
 import org.junit.Test;
 
@@ -14,9 +14,9 @@ public class HandleWorkOrderCompletedEventsTest {
 	public void with_one_work_order_that_signals_completion_early_enough() throws Exception {
 		int timeout = 2;
 		int expectedNumberOfWorkOrdersToComplete = 1;
-		AveragesKill simulationReport = getAveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
+		WorkOrderCompletionMonitor simulationReport = getAveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
 
-		NotifiableWorkOrderCompletedEventSource workOrderCompletedEventSource = new NotifiableWorkOrderCompletedEventSource(simulationReport, timeout);
+		QueueBasedEventSource workOrderCompletedEventSource = new QueueBasedEventSource(simulationReport, timeout);
 		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(1));
 
 		int actualTime = workOrderCompletedEventSource.run();
@@ -28,9 +28,9 @@ public class HandleWorkOrderCompletedEventsTest {
 	public void completes_when_there_are_no_more_events_even_if_the_work_has_not_been_completed() throws Exception {
 		int timeout = 2;
 		int expectedNumberOfWorkOrdersToComplete = 1;
-		AveragesKill simulationReport = getAveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
+		WorkOrderCompletionMonitor simulationReport = getAveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
 
-		WorkOrderEventSource workOrderCompletedEventSource = new NotifiableWorkOrderCompletedEventSource(simulationReport, timeout);
+		EventSource workOrderCompletedEventSource = new QueueBasedEventSource(simulationReport, timeout);
 		int actualTime = workOrderCompletedEventSource.run();
 
 		assertEquals(0, actualTime);
@@ -40,9 +40,9 @@ public class HandleWorkOrderCompletedEventsTest {
 	public void when_the_time_of_the_next_event_is_after_the_timeout_the_simulation_terminates() throws Exception {
 		int timeout = 2;
 		int expectedNumberOfWorkOrdersToComplete = 2;
-		final AveragesKill simulationReport = getAveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
+		final WorkOrderCompletionMonitor simulationReport = getAveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
 
-		NotifiableWorkOrderCompletedEventSource workOrderCompletedEventSource = new NotifiableWorkOrderCompletedEventSource(simulationReport, timeout);
+		QueueBasedEventSource workOrderCompletedEventSource = new QueueBasedEventSource(simulationReport, timeout);
 		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(1));
 		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(10));
 		int actualTime = workOrderCompletedEventSource.run();
@@ -54,9 +54,9 @@ public class HandleWorkOrderCompletedEventsTest {
 	public void stop_working_when_the_expected_number_of_work_orders_are_completed() throws Exception {
 		int timeout = 20;
 		int expectedNumberOfWorkOrdersToComplete = 2;
-		final AveragesKill simulationReport = getAveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
+		final WorkOrderCompletionMonitor simulationReport = getAveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
 
-		NotifiableWorkOrderCompletedEventSource workOrderCompletedEventSource = new NotifiableWorkOrderCompletedEventSource(simulationReport, timeout);
+		QueueBasedEventSource workOrderCompletedEventSource = new QueueBasedEventSource(simulationReport, timeout);
 		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(1));
 		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(3));
 		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(10));
@@ -66,8 +66,8 @@ public class HandleWorkOrderCompletedEventsTest {
 		assertEquals(3, actualTime);
 	}
 
-	private AveragesKill getAveragesKill(int timeout, int expectedNumberOfWorkOrdersToComplete) {
-		return new AveragesKill(expectedNumberOfWorkOrdersToComplete, new AverageTimeToProcessAllWorkOrders());
+	private WorkOrderCompletionMonitor getAveragesKill(int timeout, int expectedNumberOfWorkOrdersToComplete) {
+		return new WorkOrderCompletionMonitor(expectedNumberOfWorkOrdersToComplete, new AverageTimeToProcessAllWorkOrders());
 	}
 	// There are things out there that can etll me a work orders are complete
 	// and I need to give them a chance to tell me that work orders are
