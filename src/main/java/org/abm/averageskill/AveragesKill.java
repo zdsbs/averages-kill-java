@@ -4,30 +4,17 @@ import org.abm.averageskill.AverageTimeToProcessWorkOrdersTest.AverageTimeToProc
 import org.abm.averageskill.event.WorkOrderCompletedEvent;
 
 public class AveragesKill {
-	private final int maxNumberOfTicks;
-	private int timeOfLastEvent;
+	// 3/15 - This is nice, this class is evolving to just check to see when all the work orders have been completed
 	private final int expectedNumberOfWorkOrdersToComplete;
-	private int nextEventAt;
 	private int numberOfCompletedWorkItems = 0;
 	private final AverageTimeToProcessAllWorkOrders averageTimeToProcessAllWorkOrders;
 
-	public AveragesKill(int timeout, int expectedNumberOfWorkOrdersToComplete, AverageTimeToProcessAllWorkOrders averageTimeToProcessAllWorkOrders) {
-		this.maxNumberOfTicks = timeout;
+	public AveragesKill(int expectedNumberOfWorkOrdersToComplete, AverageTimeToProcessAllWorkOrders averageTimeToProcessAllWorkOrders) {
 		this.expectedNumberOfWorkOrdersToComplete = expectedNumberOfWorkOrdersToComplete;
 		this.averageTimeToProcessAllWorkOrders = averageTimeToProcessAllWorkOrders;
 	}
 
-	public int runWithEvents(WorkOrderEventSource workOrderCompletedEventSource) {
-		while (!done()) {
-			workOrderCompletedEventSource.doWork();
-		}
-		return timeOfLastEvent;
-	}
-
-	private boolean done() {
-		if (nextEventAt > maxNumberOfTicks) {
-			return true;
-		}
+	public boolean hasCompletedAllWorkOrders() {
 		if (numberOfCompletedWorkItems >= expectedNumberOfWorkOrdersToComplete) {
 			return true;
 		}
@@ -36,13 +23,7 @@ public class AveragesKill {
 
 	public void onWorkOrderCompleted(WorkOrderCompletedEvent event) {
 		this.numberOfCompletedWorkItems++;
-		this.timeOfLastEvent = event.getTicks();
 		averageTimeToProcessAllWorkOrders.onWorkOrderCompleted(event);
-	}
-
-	// This is curious but it seems mightly convientent
-	public void nextEventOccursAt(int nextEventAt) {
-		this.nextEventAt = nextEventAt;
 	}
 
 }

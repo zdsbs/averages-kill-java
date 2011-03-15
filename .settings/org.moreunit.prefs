@@ -1,7 +1,7 @@
-#Sat Feb 05 18:31:14 EST 2011
+#Tue Mar 15 18:55:14 EDT 2011
 eclipse.preferences.version=1
 org.moreunit.prefixes=
 org.moreunit.test_methodType=testMethodTypeNoPrefix
 org.moreunit.test_type=junit4
-org.moreunit.unitsourcefolder=averages-kill-java\:src/main/java\:averages-kill-java\:src/test/java
+org.moreunit.unitsourcefolder=averages-kill-java-old\:src/main/java\:averages-kill-java-old\:src/test/java
 org.moreunit.useprojectsettings=true
