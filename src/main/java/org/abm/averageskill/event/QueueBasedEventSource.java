@@ -24,13 +24,14 @@ public class QueueBasedEventSource implements EventListener {
 
 	// 3-15 re-writing this to be not so nice in here
 
-	public void doWork() {
+	public void askWorkersToDoWork() {
 
 		// NOTE we'll have to sort these events to make sure the tick events come first
-		for (Event event : popNextEvents()) {
-			if (event instanceof TickEvent) {
-				timeoutMonitor.onTickEvent((TickEvent) event);
-			}
+		for (Event event : getAllEventsForTheTick()) {
+			timeoutMonitor.onTickEvent(TickEvent.at(event.getTicks()));
+//			if (event instanceof TickEvent) {
+//				timeoutMonitor.onTickEvent((TickEvent) event);
+//			}
 
 			if (timeoutMonitor.timedOut()) {
 				return;
@@ -53,8 +54,9 @@ public class QueueBasedEventSource implements EventListener {
 
 	public int run() {
 		while (!done()) {
-			doWork();
+			askWorkersToDoWork();
 		}
+		
 		return timeOfLastEvent;
 	}
 
@@ -68,7 +70,7 @@ public class QueueBasedEventSource implements EventListener {
 		return workOrderCompletionMonitor.hasCompletedAllWorkOrders();
 	}
 
-	private List<Event> popNextEvents() {
+	private List<Event> getAllEventsForTheTick() {
 		if (events.isEmpty()) {
 			return new ArrayList<Event>();
 		}

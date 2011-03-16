@@ -14,7 +14,7 @@ public class QueueBasedEventSourceTest {
 		QueueBasedEventSource eventSource = new QueueBasedEventSource(mock(WorkOrderCompletionMonitor.class), new NeverEndingTimeoutMonitor());
 		eventSource.notifyOfEvent(WorkOrderCompletedEvent.at(100));
 		assertEquals(0, eventSource.getCurrentTime());
-		eventSource.doWork();
+		eventSource.askWorkersToDoWork();
 		assertEquals(100, eventSource.getCurrentTime());
 	}
 
@@ -23,7 +23,7 @@ public class QueueBasedEventSourceTest {
 		WorkOrderCompletionMonitor averagesKill = mock(WorkOrderCompletionMonitor.class);
 		QueueBasedEventSource eventSource = new QueueBasedEventSource(averagesKill, new AlwaysOverTimeoutMonitor());
 		eventSource.notifyOfEvent(WorkOrderCompletedEvent.at(100));
-		eventSource.doWork();
+		eventSource.askWorkersToDoWork();
 		verifyZeroInteractions(averagesKill);
 	}
 
