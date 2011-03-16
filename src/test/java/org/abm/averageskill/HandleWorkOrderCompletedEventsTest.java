@@ -37,21 +37,6 @@ public class HandleWorkOrderCompletedEventsTest {
 	}
 
 	@Test
-	public void when_the_time_of_the_next_event_is_after_the_timeout_the_simulation_terminates() throws Exception {
-		int timeout = 2;
-		int expectedNumberOfWorkOrdersToComplete = 2;
-		WorkOrderCompletionMonitor workOrderCompletionMonitotor = getWorkOderCompletionMonitor(expectedNumberOfWorkOrdersToComplete);
-		TickListeningTimeoutMonitor timeoutMonitor = new TickListeningTimeoutMonitor(timeout);
-
-		QueueBasedEventSource workOrderCompletedEventSource = new QueueBasedEventSource(workOrderCompletionMonitotor, timeoutMonitor);
-		workOrderCompletedEventSource.notifyOfEvent(WorkOrderCompletedEvent.at(1));
-		workOrderCompletedEventSource.notifyOfEvent(WorkOrderCompletedEvent.at(10));
-		int actualTime = workOrderCompletedEventSource.run();
-
-		assertEquals(1, actualTime);
-	}
-
-	@Test
 	public void stop_working_when_the_expected_number_of_work_orders_are_completed() throws Exception {
 		int timeout = 20;
 		int expectedNumberOfWorkOrdersToComplete = 2;

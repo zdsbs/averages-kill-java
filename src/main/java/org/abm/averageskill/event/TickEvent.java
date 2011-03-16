@@ -1,5 +1,6 @@
 package org.abm.averageskill.event;
 
+//NOTE this should be periodic
 public class TickEvent implements Event {
 	private final int ticks;
 

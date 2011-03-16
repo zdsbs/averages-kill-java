@@ -23,15 +23,17 @@ public class QueueBasedEventSource implements EventSource, EventListener {
 		this.timeoutMonitor = timeoutMonitor;
 	}
 
-	// 3-15 re-writing this to be Generic Events is easy except for like 35.
-	// there we only want to send this event to the simupationreport if it's a completion event.
-	// what's the best way to go about this?
+	// 3-15 re-writing this to be not so nice in here
 
 	@Override
 	public void doWork() {
 
+		// NOTE we'll have to sort these events ot make sure the tick events come first
 		for (Event event : popNextEvents()) {
-			timeoutMonitor.onTickEvent(TickEvent.at(event.getTicks()));
+			if (event instanceof TickEvent) {
+				timeoutMonitor.onTickEvent((TickEvent) event);
+			}
+
 			if (timeoutMonitor.timedOut()) {
 				return;
 			}
