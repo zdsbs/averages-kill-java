@@ -37,8 +37,8 @@ public class AverageTimeToProcessWorkOrdersTest {
 	public void average_time_to_complete_work_order_is_just_the_time_it_took_to_complete_for_one_work_order_assuming_they_all_start_at_0() throws Exception {
 		AverageTimeToProcessAllWorkOrders averageTimeToProcessAllWorkOrders = new AverageTimeToProcessAllWorkOrders();
 		WorkOrderCompletionMonitor averagesKill = new WorkOrderCompletionMonitor(1, averageTimeToProcessAllWorkOrders);
-		QueueBasedEventSource eventSource = new QueueBasedEventSource(averagesKill, 5);
-		eventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(3));
+		QueueBasedEventSource eventSource = new QueueBasedEventSource(averagesKill, new NeverEndingTimeoutMonitor());
+		eventSource.notifyOfEvent(WorkOrderCompletedEvent.at(3));
 		eventSource.run();
 		assertEquals(3, averageTimeToProcessAllWorkOrders.is());
 	}
@@ -47,9 +47,9 @@ public class AverageTimeToProcessWorkOrdersTest {
 	public void average_time_to_complete_works_just_fine_with_a_few_work_orders() throws Exception {
 		AverageTimeToProcessAllWorkOrders averageTimeToProcessAllWorkOrders = new AverageTimeToProcessAllWorkOrders();
 		WorkOrderCompletionMonitor averagesKill = new WorkOrderCompletionMonitor(2, averageTimeToProcessAllWorkOrders);
-		QueueBasedEventSource eventSource = new QueueBasedEventSource(averagesKill, 5);
-		eventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(1));
-		eventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(4));
+		QueueBasedEventSource eventSource = new QueueBasedEventSource(averagesKill, new NeverEndingTimeoutMonitor());
+		eventSource.notifyOfEvent(WorkOrderCompletedEvent.at(1));
+		eventSource.notifyOfEvent(WorkOrderCompletedEvent.at(4));
 		eventSource.run();
 		assertEquals(2, averageTimeToProcessAllWorkOrders.is());
 	}

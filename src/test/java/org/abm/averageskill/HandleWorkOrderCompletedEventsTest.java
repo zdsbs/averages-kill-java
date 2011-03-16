@@ -14,10 +14,10 @@ public class HandleWorkOrderCompletedEventsTest {
 	public void with_one_work_order_that_signals_completion_early_enough() throws Exception {
 		int timeout = 2;
 		int expectedNumberOfWorkOrdersToComplete = 1;
-		WorkOrderCompletionMonitor simulationReport = getAveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
+		WorkOrderCompletionMonitor simulationReport = getWorkOderCompletionMonitor(expectedNumberOfWorkOrdersToComplete);
 
-		QueueBasedEventSource workOrderCompletedEventSource = new QueueBasedEventSource(simulationReport, timeout);
-		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(1));
+		QueueBasedEventSource workOrderCompletedEventSource = new QueueBasedEventSource(simulationReport, new TickListeningTimeoutMonitor(timeout));
+		workOrderCompletedEventSource.notifyOfEvent(WorkOrderCompletedEvent.at(1));
 
 		int actualTime = workOrderCompletedEventSource.run();
 
@@ -28,9 +28,9 @@ public class HandleWorkOrderCompletedEventsTest {
 	public void completes_when_there_are_no_more_events_even_if_the_work_has_not_been_completed() throws Exception {
 		int timeout = 2;
 		int expectedNumberOfWorkOrdersToComplete = 1;
-		WorkOrderCompletionMonitor simulationReport = getAveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
+		WorkOrderCompletionMonitor simulationReport = getWorkOderCompletionMonitor(expectedNumberOfWorkOrdersToComplete);
 
-		EventSource workOrderCompletedEventSource = new QueueBasedEventSource(simulationReport, timeout);
+		EventSource workOrderCompletedEventSource = new QueueBasedEventSource(simulationReport, new TickListeningTimeoutMonitor(timeout));
 		int actualTime = workOrderCompletedEventSource.run();
 
 		assertEquals(0, actualTime);
@@ -40,11 +40,12 @@ public class HandleWorkOrderCompletedEventsTest {
 	public void when_the_time_of_the_next_event_is_after_the_timeout_the_simulation_terminates() throws Exception {
 		int timeout = 2;
 		int expectedNumberOfWorkOrdersToComplete = 2;
-		final WorkOrderCompletionMonitor simulationReport = getAveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
+		WorkOrderCompletionMonitor workOrderCompletionMonitotor = getWorkOderCompletionMonitor(expectedNumberOfWorkOrdersToComplete);
+		TickListeningTimeoutMonitor timeoutMonitor = new TickListeningTimeoutMonitor(timeout);
 
-		QueueBasedEventSource workOrderCompletedEventSource = new QueueBasedEventSource(simulationReport, timeout);
-		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(1));
-		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(10));
+		QueueBasedEventSource workOrderCompletedEventSource = new QueueBasedEventSource(workOrderCompletionMonitotor, timeoutMonitor);
+		workOrderCompletedEventSource.notifyOfEvent(WorkOrderCompletedEvent.at(1));
+		workOrderCompletedEventSource.notifyOfEvent(WorkOrderCompletedEvent.at(10));
 		int actualTime = workOrderCompletedEventSource.run();
 
 		assertEquals(1, actualTime);
@@ -54,19 +55,19 @@ public class HandleWorkOrderCompletedEventsTest {
 	public void stop_working_when_the_expected_number_of_work_orders_are_completed() throws Exception {
 		int timeout = 20;
 		int expectedNumberOfWorkOrdersToComplete = 2;
-		final WorkOrderCompletionMonitor simulationReport = getAveragesKill(timeout, expectedNumberOfWorkOrdersToComplete);
+		final WorkOrderCompletionMonitor simulationReport = getWorkOderCompletionMonitor(expectedNumberOfWorkOrdersToComplete);
 
-		QueueBasedEventSource workOrderCompletedEventSource = new QueueBasedEventSource(simulationReport, timeout);
-		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(1));
-		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(3));
-		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(10));
-		workOrderCompletedEventSource.notifyOfCompletedEvent(WorkOrderCompletedEvent.at(19));
+		QueueBasedEventSource workOrderCompletedEventSource = new QueueBasedEventSource(simulationReport, new TickListeningTimeoutMonitor(timeout));
+		workOrderCompletedEventSource.notifyOfEvent(WorkOrderCompletedEvent.at(1));
+		workOrderCompletedEventSource.notifyOfEvent(WorkOrderCompletedEvent.at(3));
+		workOrderCompletedEventSource.notifyOfEvent(WorkOrderCompletedEvent.at(10));
+		workOrderCompletedEventSource.notifyOfEvent(WorkOrderCompletedEvent.at(19));
 		int actualTime = workOrderCompletedEventSource.run();
 
 		assertEquals(3, actualTime);
 	}
 
-	private WorkOrderCompletionMonitor getAveragesKill(int timeout, int expectedNumberOfWorkOrdersToComplete) {
+	private WorkOrderCompletionMonitor getWorkOderCompletionMonitor(int expectedNumberOfWorkOrdersToComplete) {
 		return new WorkOrderCompletionMonitor(expectedNumberOfWorkOrdersToComplete, new AverageTimeToProcessAllWorkOrders());
 	}
 	// There are things out there that can etll me a work orders are complete
@@ -97,7 +98,7 @@ public class HandleWorkOrderCompletedEventsTest {
 	// ///////////////////////////////////
 
 	/*
-	 * NOTE 3/2 I ignore any kinds of events after my timeout except for tick events Try and replace tests that need peeking with the tick events
+	 * 3-2 I ignore any kinds of events after my timeout except for tick events Try and replace tests that need peeking with the tick events
 	 */
 
 	// Pay close attentention of all the different permutations of events

@@ -7,19 +7,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
+import org.abm.averageskill.EventListener;
 import org.abm.averageskill.EventSource;
-import org.abm.averageskill.WorkOrderCompletedListener;
+import org.abm.averageskill.TimeoutMonitor;
 import org.abm.averageskill.WorkOrderCompletionMonitor;
 
-public class QueueBasedEventSource implements EventSource, WorkOrderCompletedListener {
+public class QueueBasedEventSource implements EventSource, EventListener {
 	private final WorkOrderCompletionMonitor workOrderCompletionMonitor;
-	private final Queue<List<WorkOrderCompletedEvent>> events = new ArrayDeque<List<WorkOrderCompletedEvent>>();
+	private final Queue<List<Event>> events = new ArrayDeque<List<Event>>();
 	private int timeOfLastEvent = 0;
-	private final int timeout;
+	private final TimeoutMonitor timeoutMonitor;
 
-	public QueueBasedEventSource(WorkOrderCompletionMonitor simulationReport, int timeout) {
-		this.workOrderCompletionMonitor = simulationReport;
-		this.timeout = timeout;
+	public QueueBasedEventSource(WorkOrderCompletionMonitor workOrderCompletionMonitor, TimeoutMonitor timeoutMonitor) {
+		this.workOrderCompletionMonitor = workOrderCompletionMonitor;
+		this.timeoutMonitor = timeoutMonitor;
 	}
 
 	// 3-15 re-writing this to be Generic Events is easy except for like 35.
@@ -29,13 +30,16 @@ public class QueueBasedEventSource implements EventSource, WorkOrderCompletedLis
 	@Override
 	public void doWork() {
 
-		for (WorkOrderCompletedEvent event : popNextEvents()) {
-			int currentTime = event.getTicks();
-			if (currentTime > timeout) {
+		for (Event event : popNextEvents()) {
+			timeoutMonitor.onTickEvent(TickEvent.at(event.getTicks()));
+			if (timeoutMonitor.timedOut()) {
 				return;
 			}
-			timeOfLastEvent = currentTime;
-			workOrderCompletionMonitor.onWorkOrderCompleted(event);
+			timeOfLastEvent = event.getTicks();
+
+			if (event instanceof WorkOrderCompletedEvent) {
+				workOrderCompletionMonitor.onWorkOrderCompleted((WorkOrderCompletedEvent) event);
+			}
 		}
 	}
 
@@ -61,19 +65,22 @@ public class QueueBasedEventSource implements EventSource, WorkOrderCompletedLis
 		if (hasMoreEvents() == false) {
 			return true;
 		}
+		if (timeoutMonitor.timedOut()) {
+			return true;
+		}
 		return workOrderCompletionMonitor.hasCompletedAllWorkOrders();
 	}
 
-	private List<WorkOrderCompletedEvent> popNextEvents() {
+	private List<Event> popNextEvents() {
 		if (events.isEmpty()) {
-			return new ArrayList<WorkOrderCompletedEvent>();
+			return new ArrayList<Event>();
 		}
 		return events.remove();
 	}
 
 	@Override
-	public void notifyOfCompletedEvent(WorkOrderCompletedEvent... events) {
-		List<WorkOrderCompletedEvent> asList = asList(events);
+	public void notifyOfEvent(Event... events) {
+		List<Event> asList = asList(events);
 		this.events.add(asList);
 	}
 
