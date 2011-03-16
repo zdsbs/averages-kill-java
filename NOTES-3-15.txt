@@ -1,0 +1,28 @@
+3/15
+Three directions to head in:
+	addressing the notes and 3-15s
+	looking at how to actually complete work 
+	Packages + Naming
+	
+	I'd definitely like to talk about naming for a little bit.
+	
+How did the work go?
+	Well
+	A) I totally forgot that I was going to make TickEvents. But totally remembered that the notification of AveragesKill of the next tick should also not happen
+	B) To fix the future peaking I moved the run() method off of the AveragesKill class and onto the EventSource
+		This was great because then the AveragesKill class was simply monitoring for when all the work orders were complete (cool)
+		But this moved the logic into the event source, which I think is okay, but not 100% loving it.
+		
+		Then I remembered about TickEvents. This was cool because I already had the concept of something that monitored WorkOrderCompletion events and allowed
+			The EventSource to query it. It was straight forward to add something else that looked like that so I created the TimeoutMonitor, I liked that.
+			
+	C) The event source got messy! There are two things I don't like about it
+		the doWork event needs to cast - I think this can be fixed with a visitor pattern
+		there is special handling of the TickEvents
+		maybe this isn't a problem, but I need to store the time of the last tick (I guess I could have a CurrentTimeMonitor :))
+	D) I killed the interface event source
+	E) These tests are highly suspect QueueBasedEventSourceTest
+	F) Obvious places for improvement
+		Having periodic events
+		Have TimoutMonitor + WorkOrderCompletionMonitor implement listeners for their types of events and just have doWork notify every one of the tick event type
+		

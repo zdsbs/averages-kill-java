@@ -8,11 +8,10 @@ import java.util.List;
 import java.util.Queue;
 
 import org.abm.averageskill.EventListener;
-import org.abm.averageskill.EventSource;
 import org.abm.averageskill.TimeoutMonitor;
 import org.abm.averageskill.WorkOrderCompletionMonitor;
 
-public class QueueBasedEventSource implements EventSource, EventListener {
+public class QueueBasedEventSource implements EventListener {
 	private final WorkOrderCompletionMonitor workOrderCompletionMonitor;
 	private final Queue<List<Event>> events = new ArrayDeque<List<Event>>();
 	private int timeOfLastEvent = 0;
@@ -25,10 +24,9 @@ public class QueueBasedEventSource implements EventSource, EventListener {
 
 	// 3-15 re-writing this to be not so nice in here
 
-	@Override
 	public void doWork() {
 
-		// NOTE we'll have to sort these events ot make sure the tick events come first
+		// NOTE we'll have to sort these events to make sure the tick events come first
 		for (Event event : popNextEvents()) {
 			if (event instanceof TickEvent) {
 				timeoutMonitor.onTickEvent((TickEvent) event);
@@ -45,17 +43,14 @@ public class QueueBasedEventSource implements EventSource, EventListener {
 		}
 	}
 
-	@Override
-	public boolean hasMoreEvents() {
+	private boolean hasMoreEvents() {
 		return !events.isEmpty();
 	}
 
-	@Override
 	public int getCurrentTime() {
 		return timeOfLastEvent;
 	}
 
-	@Override
 	public int run() {
 		while (!done()) {
 			doWork();

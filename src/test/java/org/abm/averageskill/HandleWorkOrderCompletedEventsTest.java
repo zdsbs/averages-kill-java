@@ -30,7 +30,7 @@ public class HandleWorkOrderCompletedEventsTest {
 		int expectedNumberOfWorkOrdersToComplete = 1;
 		WorkOrderCompletionMonitor simulationReport = getWorkOderCompletionMonitor(expectedNumberOfWorkOrdersToComplete);
 
-		EventSource workOrderCompletedEventSource = new QueueBasedEventSource(simulationReport, new TickListeningTimeoutMonitor(timeout));
+		QueueBasedEventSource workOrderCompletedEventSource = new QueueBasedEventSource(simulationReport, new TickListeningTimeoutMonitor(timeout));
 		int actualTime = workOrderCompletedEventSource.run();
 
 		assertEquals(0, actualTime);
