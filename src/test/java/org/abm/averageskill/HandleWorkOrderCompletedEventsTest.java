@@ -6,10 +6,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.abm.averageskill.AverageTimeToProcessWorkOrdersTest.AverageTimeToProcessAllWorkOrders;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
 import org.abm.averageskill.event.Event;
-import org.abm.averageskill.event.QueueBasedEventSource;
-import org.abm.averageskill.event.WorkOrderCompletedEvent;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -19,21 +19,10 @@ public class HandleWorkOrderCompletedEventsTest {
 		public void tick(int atTime);
 	}
 
+	@Data
+	@RequiredArgsConstructor(staticName = "at")
 	public static class TimeoutEvent implements Event {
 		private final int ticks;
-
-		public TimeoutEvent(int ticks) {
-			this.ticks = ticks;
-		}
-
-		public static TimeoutEvent at(int ticks) {
-			return new TimeoutEvent(ticks);
-		}
-
-		@Override
-		public int getTicks() {
-			return ticks;
-		}
 	}
 
 	public static class AllWorkCompletedEvent implements Event {
@@ -137,7 +126,7 @@ public class HandleWorkOrderCompletedEventsTest {
 	public void simulationNotYetStopped() {
 		// !??!?!
 	}
-	
+
 	@Test
 	public void forwardTickToEverythingItMonitors() throws Exception {
 		IRespondToTick ticker1 = Mockito.mock(IRespondToTick.class);
@@ -166,71 +155,6 @@ public class HandleWorkOrderCompletedEventsTest {
 	 * Forwarding / creating new events
 	 */
 
-	@Test
-	@Ignore
-	public void with_one_work_order_that_signals_completion_early_enough()
-			throws Exception {
-
-		int timeout = 2;
-		int expectedNumberOfWorkOrdersToComplete = 1;
-
-		WorkOrderCompletionMonitor workOrderCompletionMonitor = getWorkOrderCompletionMonitor(expectedNumberOfWorkOrdersToComplete);
-
-		QueueBasedEventSource queueBasedEventSource = new QueueBasedEventSource(
-				workOrderCompletionMonitor, new TickListeningTimeoutMonitor(
-						timeout));
-
-		workOrderCompletionMonitor.onWorkOrderCompleted(WorkOrderCompletedEvent
-				.at(1));
-		int actualTime = queueBasedEventSource.run();
-
-		assertEquals(1, actualTime);
-	}
-
-	@Test
-	public void completes_when_there_are_no_more_events_even_if_the_work_has_not_been_completed()
-			throws Exception {
-		int timeout = 2;
-		int expectedNumberOfWorkOrdersToComplete = 1;
-		WorkOrderCompletionMonitor simulationReport = getWorkOrderCompletionMonitor(expectedNumberOfWorkOrdersToComplete);
-
-		QueueBasedEventSource workOrderCompletedEventSource = new QueueBasedEventSource(
-				simulationReport, new TickListeningTimeoutMonitor(timeout));
-		int actualTime = workOrderCompletedEventSource.run();
-
-		assertEquals(0, actualTime);
-	}
-
-	@Test
-	public void stop_working_when_the_expected_number_of_work_orders_are_completed()
-			throws Exception {
-		int timeout = 20;
-		int expectedNumberOfWorkOrdersToComplete = 2;
-		final WorkOrderCompletionMonitor simulationReport = getWorkOrderCompletionMonitor(expectedNumberOfWorkOrdersToComplete);
-
-		QueueBasedEventSource workOrderCompletedEventSource = new QueueBasedEventSource(
-				simulationReport, new TickListeningTimeoutMonitor(timeout));
-		workOrderCompletedEventSource.notifyOfEvent(WorkOrderCompletedEvent
-				.at(1));
-		workOrderCompletedEventSource.notifyOfEvent(WorkOrderCompletedEvent
-				.at(3));
-		workOrderCompletedEventSource.notifyOfEvent(WorkOrderCompletedEvent
-				.at(10));
-		workOrderCompletedEventSource.notifyOfEvent(WorkOrderCompletedEvent
-				.at(19));
-		int actualTime = workOrderCompletedEventSource.run();
-
-		assertEquals(3, actualTime);
-	}
-
-	private WorkOrderCompletionMonitor getWorkOrderCompletionMonitor(
-			int expectedNumberOfWorkOrdersToComplete) {
-
-		return new WorkOrderCompletionMonitor(
-				expectedNumberOfWorkOrdersToComplete,
-				new AverageTimeToProcessAllWorkOrders());
-
-	}
 	// There are things out there that can etll me a work orders are complete
 	// and I need to give them a chance to tell me that work orders are
 	// completed
