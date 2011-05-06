@@ -55,19 +55,19 @@ public class HandleWorkOrderCompletedEventsTest {
 
 	public static class Simulation {
 		private int haltingTime;
-		private final Collection<IRespondToTick> workers;
+		private final Collection<IRespondToTick> tickListeners;
 
 		public Simulation(Collection<IRespondToTick> workers) {
-			this.workers = workers;
+			this.tickListeners = workers;
 		}
 
 		public Simulation() {
 			this(Collections.<IRespondToTick> emptyList());
 		}
 
-		public void handleEvent(Event event) {
+		private void stopTheSimulationAtUnlessItAlreadyStopped(int stoppingTime) {
 			if (notAlreadyDone()) {
-				haltingTime = event.getTicks();
+				haltingTime = stoppingTime;
 			}
 		}
 
@@ -84,9 +84,17 @@ public class HandleWorkOrderCompletedEventsTest {
 		}
 
 		public void tick(int i) {
-			for (IRespondToTick each : workers) {
+			for (IRespondToTick each : tickListeners) {
 				each.tick(i);
 			}
+		}
+
+		public void onWorkCompleted(AllWorkCompletedEvent event) {
+			stopTheSimulationAtUnlessItAlreadyStopped(event.getTicks());
+		}
+
+		public void onTimeout(TimeoutEvent event) {
+			stopTheSimulationAtUnlessItAlreadyStopped(event.getTicks());
 		}
 	}
 
@@ -94,7 +102,7 @@ public class HandleWorkOrderCompletedEventsTest {
 	@Test
 	public void workCompletesEarlyEnough() throws Exception {
 		Simulation simulation = new Simulation();
-		simulation.handleEvent(AllWorkCompletedEvent.at(1));
+		simulation.onWorkCompleted(AllWorkCompletedEvent.at(1));
 		// simulate timeout monitor never raising timeout
 		assertEquals(1, simulation.stoppedAt());
 		// assertEquals(State.stoppedAt(1), simulation.state());
@@ -104,31 +112,32 @@ public class HandleWorkOrderCompletedEventsTest {
 	public void workNeverCompletes() throws Exception {
 		Simulation simulation = new Simulation();
 		// simulate work never being completed
-		simulation.handleEvent(TimeoutEvent.at(2));
+		simulation.onTimeout(TimeoutEvent.at(2));
 		assertEquals(2, simulation.stoppedAt());
 	}
 
 	@Test
 	public void workCompletesTooLate() throws Exception {
 		Simulation simulation = new Simulation();
-		simulation.handleEvent(TimeoutEvent.at(2));
-		simulation.handleEvent(AllWorkCompletedEvent.at(3));
+		simulation.onTimeout(TimeoutEvent.at(2));
+		simulation.onWorkCompleted(AllWorkCompletedEvent.at(3));
 		assertEquals(2, simulation.stoppedAt());
 	}
 
 	@Test
-	@Ignore
-	public void simulationReceivesNoEvents() throws Exception {
+	public void ignoresTimeoutEventComingTooLate() throws Exception {
 		Simulation simulation = new Simulation();
-		// nothing has happened yet to trigger stopping the simulation
-		assertEquals(2, simulation.stoppedAt());
-		// assertEquals(State.running(), simulation.state());
+		simulation.onWorkCompleted(AllWorkCompletedEvent.at(3));
+		simulation.onTimeout(TimeoutEvent.at(5));
+		assertEquals(3, simulation.stoppedAt());
 	}
 
-	@Test @Ignore("Use Zach's idea")
-	public void runUntilHaltingTime() throws Exception {
+	@Test
+	@Ignore("We don't know yet which client will care that the simulation is still running")
+	public void simulationNotYetStopped() {
+		// !??!?!
 	}
-
+	
 	@Test
 	public void forwardTickToEverythingItMonitors() throws Exception {
 		IRespondToTick ticker1 = Mockito.mock(IRespondToTick.class);
