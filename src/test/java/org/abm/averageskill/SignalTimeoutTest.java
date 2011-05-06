@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.abm.averageskill.HandleWorkOrderCompletedEventsTest.IRespondToTick;
 import org.abm.averageskill.HandleWorkOrderCompletedEventsTest.TimeoutEvent;
+import org.abm.averageskill.event.TimeoutListener;
 import org.junit.Test;
 
 public class SignalTimeoutTest {
@@ -23,10 +24,6 @@ public class SignalTimeoutTest {
 			if (atTime >= timeout)
 				timeoutListener.onTimeout(TimeoutEvent.at(atTime));
 		}
-	}
-
-	public interface TimeoutListener {
-		void onTimeout(TimeoutEvent at);
 	}
 
 	@Test

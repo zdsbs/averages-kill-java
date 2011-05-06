@@ -1,17 +1,10 @@
 package org.abm.averageskill;
 
 import static org.junit.Assert.assertEquals;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import org.abm.averageskill.event.Event;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.Mockito;
 
 public class HandleWorkOrderCompletedEventsTest {
@@ -39,51 +32,6 @@ public class HandleWorkOrderCompletedEventsTest {
 
 		public static AllWorkCompletedEvent at(int ticks) {
 			return new AllWorkCompletedEvent(ticks);
-		}
-	}
-
-	public static class Simulation {
-		private int haltingTime;
-		private final Collection<IRespondToTick> tickListeners;
-
-		public Simulation(Collection<IRespondToTick> workers) {
-			this.tickListeners = workers;
-		}
-
-		public Simulation() {
-			this(Collections.<IRespondToTick> emptyList());
-		}
-
-		private void stopTheSimulationAtUnlessItAlreadyStopped(int stoppingTime) {
-			if (notAlreadyDone()) {
-				haltingTime = stoppingTime;
-			}
-		}
-
-		private boolean notAlreadyDone() {
-			return haltingTime <= 0;
-		}
-
-		public int stoppedAt() {
-			return haltingTime;
-		}
-
-		public static Simulation watching(IRespondToTick... workers) {
-			return new Simulation(Arrays.<IRespondToTick> asList(workers));
-		}
-
-		public void tick(int i) {
-			for (IRespondToTick each : tickListeners) {
-				each.tick(i);
-			}
-		}
-
-		public void onWorkCompleted(AllWorkCompletedEvent event) {
-			stopTheSimulationAtUnlessItAlreadyStopped(event.getTicks());
-		}
-
-		public void onTimeout(TimeoutEvent event) {
-			stopTheSimulationAtUnlessItAlreadyStopped(event.getTicks());
 		}
 	}
 
