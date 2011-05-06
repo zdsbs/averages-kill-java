@@ -8,7 +8,10 @@ import org.abm.averageskill.HandleWorkOrderCompletedEventsTest.IRespondToTick;
 import org.abm.averageskill.HandleWorkOrderCompletedEventsTest.TimeoutEvent;
 import org.junit.Test;
 
-public class TimeoutMonitorTest {
+public class SignalTimeoutTest {
+	private final TimeoutListener timeoutListener = mock(TimeoutListener.class);
+	private final TimeoutMonitor timeoutMonitor = new TimeoutMonitor(3, timeoutListener);
+
 	@RequiredArgsConstructor
 	public static class TimeoutMonitor implements IRespondToTick {
 		private final int timeout;
@@ -19,7 +22,6 @@ public class TimeoutMonitorTest {
 			if (atTime >= timeout)
 				timeoutListener.onTimeout(TimeoutEvent.at(atTime));
 		}
-
 	}
 
 	public interface TimeoutListener {
@@ -27,40 +29,26 @@ public class TimeoutMonitorTest {
 	}
 
 	@Test
-	public void when_the_monitor_hit_the_timeout_it_raises_the_timeoutEvent()
-			throws Exception {
-
-		TimeoutListener timeoutListener = mock(TimeoutListener.class);
-		TimeoutMonitor timeoutMonitor = new TimeoutMonitor(3, timeoutListener);
+	public void timeout_is_reached_exactly() throws Exception {
 		timeoutMonitor.tick(3);
 		verify(timeoutListener).onTimeout(TimeoutEvent.at(3));
 	}
 
 	@Test
-	public void when_the_monitor_is_notified_of_a_tick_that_is_before_the_time_it_does_nothing()
-			throws Exception {
-
-		TimeoutListener timeoutListener = mock(TimeoutListener.class);
-		TimeoutMonitor timeoutMonitor = new TimeoutMonitor(3, timeoutListener);
+	public void timeout_is_not_yet_reached() throws Exception {
 		timeoutMonitor.tick(anythingLessThan(3));
 		verify(timeoutListener, never()).onTimeout(any(TimeoutEvent.class));
 	}
-	
-	//Should this actually stop at 3 instead of 4?
-	@Test
-	public void when_the_monitor_is_notified_of_a_tick_that_is_after_the_timeout_it_raises_the_timeoutEvent()
-			throws Exception {
 
-		TimeoutListener timeoutListener = mock(TimeoutListener.class);
-		TimeoutMonitor timeoutMonitor = new TimeoutMonitor(3, timeoutListener);
-		
+	// Should this actually stop at 3 instead of 4?
+	@Test
+	public void timeout_has_passed() throws Exception {
 		timeoutMonitor.tick(1);
 		timeoutMonitor.tick(2);
 		timeoutMonitor.tick(4);
 		verify(timeoutListener).onTimeout(TimeoutEvent.at(4));
 	}
-	
-	
+
 	private int anythingLessThan(int upperBound) {
 		return upperBound - 1;
 	}
