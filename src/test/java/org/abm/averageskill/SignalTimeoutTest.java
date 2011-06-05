@@ -1,11 +1,12 @@
 package org.abm.averageskill;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import lombok.RequiredArgsConstructor;
 
-import org.abm.averageskill.HandleWorkOrderCompletedEventsTest.IRespondToTick;
-import org.abm.averageskill.HandleWorkOrderCompletedEventsTest.TimeoutEvent;
+import org.abm.averageskill.event.TimeoutEvent;
 import org.abm.averageskill.event.TimeoutListener;
 import org.junit.Test;
 
@@ -15,11 +16,10 @@ public class SignalTimeoutTest {
 			timeoutListener);
 
 	@RequiredArgsConstructor
-	public static class TimeoutMonitor implements IRespondToTick {
+	public static class TimeoutMonitor {
 		private final int timeout;
 		private final TimeoutListener timeoutListener;
 
-		@Override
 		public void tick(int atTime) {
 			if (atTime >= timeout)
 				timeoutListener.onTimeout(TimeoutEvent.at(atTime));

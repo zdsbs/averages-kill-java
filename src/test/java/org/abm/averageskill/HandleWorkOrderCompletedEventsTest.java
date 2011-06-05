@@ -1,40 +1,14 @@
 package org.abm.averageskill;
 
 import static org.junit.Assert.assertEquals;
-import lombok.*;
 
-import org.abm.averageskill.event.Event;
-import org.junit.*;
-import org.mockito.Mockito;
+import org.abm.averageskill.event.AllWorkCompletedEvent;
+import org.abm.averageskill.event.TimeoutEvent;
+import org.abm.averageskill.simulation.Simulation;
+import org.junit.Ignore;
+import org.junit.Test;
 
 public class HandleWorkOrderCompletedEventsTest {
-	public interface IRespondToTick {
-		public void tick(int atTime);
-	}
-
-	@Data
-	@RequiredArgsConstructor(staticName = "at")
-	public static class TimeoutEvent implements Event {
-		private final int ticks;
-	}
-
-	public static class AllWorkCompletedEvent implements Event {
-		private final int ticks;
-
-		public AllWorkCompletedEvent(int ticks) {
-			this.ticks = ticks;
-		}
-
-		@Override
-		public int getTicks() {
-			return ticks;
-		}
-
-		public static AllWorkCompletedEvent at(int ticks) {
-			return new AllWorkCompletedEvent(ticks);
-		}
-	}
-
 	// We're ignoring how work is partition
 	@Test
 	public void workCompletesEarlyEnough() throws Exception {
@@ -75,32 +49,8 @@ public class HandleWorkOrderCompletedEventsTest {
 		// !??!?!
 	}
 
-	@Test
-	public void forwardTickToEverythingItMonitors() throws Exception {
-		IRespondToTick ticker1 = Mockito.mock(IRespondToTick.class);
-		IRespondToTick ticker2 = Mockito.mock(IRespondToTick.class);
-		IRespondToTick ticker3 = Mockito.mock(IRespondToTick.class);
-
-		Simulation simulation = Simulation.watching(ticker1, ticker2, ticker3);
-
-		simulation.tick(1);
-		simulation.tick(2);
-		simulation.tick(3);
-
-		Mockito.verify(ticker1).tick(1);
-		Mockito.verify(ticker1).tick(2);
-		Mockito.verify(ticker1).tick(3);
-		Mockito.verify(ticker2).tick(1);
-		Mockito.verify(ticker2).tick(2);
-		Mockito.verify(ticker2).tick(3);
-		Mockito.verify(ticker3).tick(1);
-		Mockito.verify(ticker3).tick(2);
-		Mockito.verify(ticker3).tick(3);
-	}
-
 	/*
-	 * 1) Knowing who totell to do something 2) Knowing when to stop 3)
-	 * Forwarding / creating new events
+	 * 1) Knowing who totell to do something 2) Knowing when to stop 3) Forwarding / creating new events
 	 */
 
 	// There are things out there that can etll me a work orders are complete
@@ -138,8 +88,7 @@ public class HandleWorkOrderCompletedEventsTest {
 	// ///////////////////////////////////
 
 	/*
-	 * 3-2 I ignore any kinds of events after my timeout except for tick events
-	 * Try and replace tests that need peeking with the tick events
+	 * 3-2 I ignore any kinds of events after my timeout except for tick events Try and replace tests that need peeking with the tick events
 	 */
 
 	// Pay close attentention of all the different permutations of events

@@ -1,6 +1,6 @@
 package org.abm.averageskill.event;
 
-public class WorkOrderCompletedEvent implements Event {
+public class WorkOrderCompletedEvent {
 	private final int ticks;
 
 	public WorkOrderCompletedEvent(int ticks) {
@@ -11,7 +11,6 @@ public class WorkOrderCompletedEvent implements Event {
 		return new WorkOrderCompletedEvent(ticks);
 	}
 
-	@Override
 	public int getTicks() {
 		return ticks;
 	}

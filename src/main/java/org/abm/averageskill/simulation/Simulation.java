@@ -1,20 +1,13 @@
-package org.abm.averageskill;
+package org.abm.averageskill.simulation;
 
-import java.util.*;
-
-import org.abm.averageskill.HandleWorkOrderCompletedEventsTest.*;
+import org.abm.averageskill.event.AllWorkCompletedEvent;
+import org.abm.averageskill.event.TimeoutEvent;
 import org.abm.averageskill.event.TimeoutListener;
 
 public class Simulation implements TimeoutListener {
 	private int haltingTime;
-	private final Collection<IRespondToTick> tickListeners;
-
-	public Simulation(Collection<IRespondToTick> workers) {
-		this.tickListeners = workers;
-	}
 
 	public Simulation() {
-		this(Collections.<IRespondToTick> emptyList());
 	}
 
 	private void stopTheSimulationAtUnlessItAlreadyStopped(int stoppingTime) {
@@ -31,20 +24,11 @@ public class Simulation implements TimeoutListener {
 		return haltingTime;
 	}
 
-	public static Simulation watching(IRespondToTick... workers) {
-		return new Simulation(Arrays.<IRespondToTick> asList(workers));
-	}
-
-	public void tick(int i) {
-		for (IRespondToTick each : tickListeners) {
-			each.tick(i);
-		}
-	}
-
 	public void onWorkCompleted(AllWorkCompletedEvent event) {
 		stopTheSimulationAtUnlessItAlreadyStopped(event.getTicks());
 	}
 
+	@Override
 	public void onTimeout(TimeoutEvent event) {
 		stopTheSimulationAtUnlessItAlreadyStopped(event.getTicks());
 	}
