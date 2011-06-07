@@ -4,27 +4,15 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import lombok.RequiredArgsConstructor;
 
 import org.abm.averageskill.event.TimeoutEvent;
-import org.abm.averageskill.event.TimeoutListener;
+import org.abm.averageskill.simulation.TimeoutListener;
+import org.abm.averageskill.simulation.TimeoutMonitor;
 import org.junit.Test;
 
 public class SignalTimeoutTest {
 	private final TimeoutListener timeoutListener = mock(TimeoutListener.class);
-	private final TimeoutMonitor timeoutMonitor = new TimeoutMonitor(3,
-			timeoutListener);
-
-	@RequiredArgsConstructor
-	public static class TimeoutMonitor {
-		private final int timeout;
-		private final TimeoutListener timeoutListener;
-
-		public void tick(int atTime) {
-			if (atTime >= timeout)
-				timeoutListener.onTimeout(TimeoutEvent.at(atTime));
-		}
-	}
+	private final TimeoutMonitor timeoutMonitor = new TimeoutMonitor(3,timeoutListener);
 
 	@Test
 	public void timeout_is_reached_exactly() throws Exception {

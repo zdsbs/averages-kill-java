@@ -1,27 +1,28 @@
 package org.abm.averageskill.simulation;
 
 import org.abm.averageskill.event.AllWorkCompletedEvent;
+import org.abm.averageskill.event.SimulationTerminatedEvent;
 import org.abm.averageskill.event.TimeoutEvent;
-import org.abm.averageskill.event.TimeoutListener;
 
+// What can I ignore right now / or what's the weakest assumption I can make
+// right now.
+// Better yet when I start making an assumption ask myself can I make a
+// weaker assumption!
+
+//Is this a simulation
 public class Simulation implements TimeoutListener {
-	private int haltingTime;
+	private boolean stopped = false;
+	private final SimulationTerminationListener terminationListener;
 
-	public Simulation() {
+	public Simulation(SimulationTerminationListener terminationListener) {
+		this.terminationListener = terminationListener;
 	}
 
 	private void stopTheSimulationAtUnlessItAlreadyStopped(int stoppingTime) {
-		if (notAlreadyDone()) {
-			haltingTime = stoppingTime;
+		if (!stopped) {
+			terminationListener.onTermination(SimulationTerminatedEvent.at(stoppingTime));
+			stopped = true;
 		}
-	}
-
-	private boolean notAlreadyDone() {
-		return haltingTime <= 0;
-	}
-
-	public int stoppedAt() {
-		return haltingTime;
 	}
 
 	public void onWorkCompleted(AllWorkCompletedEvent event) {
