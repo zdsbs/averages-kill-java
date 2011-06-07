@@ -41,13 +41,16 @@ public class TicksUntilItShouldntTest {
 	// Hah, yuck
 	@Test
 	public void timeout() throws Exception {
+		// This setup is so confusing
 		Tickee someOtherTickee = mock(Tickee.class);
 		SimulationTerminationListener terminationListener = mock(SimulationTerminationListener.class);
 		Simulation simulation = new Simulation(terminationListener);
 		Tickee timeoutMonitor = new TimeoutMonitor(3, simulation);
 		Ticker ticker = new Ticker(timeoutMonitor, someOtherTickee);
+
 		simulation.addTerminationListener(ticker);
 		ticker.run();
+
 		InOrder inOrder = inOrder(someOtherTickee);
 		inOrder.verify(someOtherTickee).tick(0);
 		inOrder.verify(someOtherTickee).tick(1);
