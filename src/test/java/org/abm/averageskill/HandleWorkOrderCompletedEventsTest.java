@@ -1,6 +1,7 @@
 package org.abm.averageskill;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import org.abm.averageskill.event.AllWorkCompletedEvent;
@@ -49,6 +50,7 @@ public class HandleWorkOrderCompletedEventsTest {
 		simulation.onTimeout(TimeoutEvent.at(5));
 
 		verify(terminationListener).onTermination(SimulationTerminatedEvent.at(3));
+		verify(terminationListener, never()).onTermination(SimulationTerminatedEvent.at(5));
 	}
 
 	@Test
