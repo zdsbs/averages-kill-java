@@ -12,7 +12,7 @@ import org.abm.averageskill.simulation.SimulationTerminationListener;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class HandleWorkOrderCompletedEventsTest {
+public class SimulationSignalingTermination {
 	// We're ignoring how work is partition
 	@Test
 	public void workCompletesEarlyEnough() throws Exception {

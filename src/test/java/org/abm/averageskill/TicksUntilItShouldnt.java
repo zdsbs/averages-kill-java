@@ -12,7 +12,7 @@ import org.abm.averageskill.simulation.TimeoutMonitor;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-public class TicksUntilItShouldntTest {
+public class TicksUntilItShouldnt {
 	public class Ticker implements SimulationTerminationListener {
 		private boolean done = false;
 		private final Tickee[] tickees;

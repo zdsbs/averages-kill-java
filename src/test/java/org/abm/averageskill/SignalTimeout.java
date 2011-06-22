@@ -10,7 +10,7 @@ import org.abm.averageskill.simulation.TimeoutListener;
 import org.abm.averageskill.simulation.TimeoutMonitor;
 import org.junit.Test;
 
-public class SignalTimeoutTest {
+public class SignalTimeout {
 	private final TimeoutListener timeoutListener = mock(TimeoutListener.class);
 	private final TimeoutMonitor timeoutMonitor = new TimeoutMonitor(3,timeoutListener);
 
