@@ -21,10 +21,14 @@ public class Simulation implements TimeoutListener {
 		this.terminationListeners.add(terminationListener);
 	}
 
+	public Simulation() {
+	}
+
 	private void stopTheSimulationAtUnlessItAlreadyStopped(int stoppingTime) {
 		if (!stopped) {
 			for (SimulationTerminationListener terminationListener : terminationListeners) {
-				terminationListener.onTermination(SimulationTerminatedEvent.at(stoppingTime));
+				terminationListener.onTermination(SimulationTerminatedEvent
+						.at(stoppingTime));
 			}
 			stopped = true;
 		}
@@ -39,7 +43,8 @@ public class Simulation implements TimeoutListener {
 		stopTheSimulationAtUnlessItAlreadyStopped(event.getTicks());
 	}
 
-	public void addTerminationListener(SimulationTerminationListener terminationListener) {
+	public void addTerminationListener(
+			SimulationTerminationListener terminationListener) {
 		terminationListeners.add(terminationListener);
 	}
 }

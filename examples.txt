@@ -1,0 +1,31 @@
+$cat config.txt
+work-orders: 1
+tiers: 1
+workers-per-tier: 1
+workers-completion: 10
+transition-time: 1
+
+$run-sim config.txt
+
+$cat results.txt
+number of work orders complete: 1
+time to complete all work orders: 12
+
+==
+Worker profile per tier?
+If the simulation goes to long do we need a timeout?
+
+Randomize
+workers-completion: 
+	distribution: normal, uniform, etc
+	mean: 10
+	stdv: 0
+
+transition-time: 
+	distribution: normal
+	mean: 1
+	stdv: 0
+
+TODO:
+Build dummy simulation that stubs out the results
+Can I build it using the pieces I have

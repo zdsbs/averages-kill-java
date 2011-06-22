@@ -2,24 +2,20 @@ package org.abm.averageskill;
 
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import org.abm.averageskill.event.SimulationTerminatedEvent;
-import org.abm.averageskill.simulation.Simulation;
 import org.abm.averageskill.simulation.SimulationTerminationListener;
 import org.abm.averageskill.simulation.Tickee;
-import org.abm.averageskill.simulation.TimeoutMonitor;
 import org.junit.Test;
 import org.mockito.InOrder;
 
 public class TicksUntilItShouldnt {
 	public class Ticker implements SimulationTerminationListener {
 		private boolean done = false;
-		private final Tickee[] tickees;
 		int time = 0;
 
-		public Ticker(Tickee... tickees) {
-			this.tickees = tickees;
+		public Ticker() {
 		}
 
 		@Override
@@ -27,7 +23,7 @@ public class TicksUntilItShouldnt {
 			done = true;
 		}
 
-		public void run() {
+		public void run(Tickee... tickees) {
 			while (!done) {
 				for (Tickee tickee : tickees) {
 					tickee.tick(time);
@@ -43,19 +39,23 @@ public class TicksUntilItShouldnt {
 	public void timeout() throws Exception {
 		// This setup is so confusing
 		Tickee someOtherTickee = mock(Tickee.class);
-		SimulationTerminationListener terminationListener = mock(SimulationTerminationListener.class);
-		Simulation simulation = new Simulation(terminationListener);
-		Tickee timeoutMonitor = new TimeoutMonitor(3, simulation);
-		Ticker ticker = new Ticker(timeoutMonitor, someOtherTickee);
+		final Ticker ticker = new Ticker();
 
-		simulation.addTerminationListener(ticker);
-		ticker.run();
+		ticker.run(someOtherTickee, new Tickee() {
+
+			@Override
+			public void tick(int atTime) {
+				if (atTime >= 3)
+					ticker.onTermination(SimulationTerminatedEvent.at(atTime));
+			}
+		});
 
 		InOrder inOrder = inOrder(someOtherTickee);
 		inOrder.verify(someOtherTickee).tick(0);
 		inOrder.verify(someOtherTickee).tick(1);
 		inOrder.verify(someOtherTickee).tick(2);
 		inOrder.verify(someOtherTickee).tick(3);
-		verify(terminationListener).onTermination(SimulationTerminatedEvent.at(3));
+		verifyNoMoreInteractions(someOtherTickee);
 	}
+
 }
