@@ -3,6 +3,8 @@ package org.abm.averageskill.simulation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.abm.averageskill.OneWorkerOnePieceOfWork.Config;
+import org.abm.averageskill.OneWorkerOnePieceOfWork.Results;
 import org.abm.averageskill.event.AllWorkCompletedEvent;
 import org.abm.averageskill.event.SimulationTerminatedEvent;
 import org.abm.averageskill.event.TimeoutEvent;
@@ -27,8 +29,7 @@ public class Simulation implements TimeoutListener {
 	private void stopTheSimulationAtUnlessItAlreadyStopped(int stoppingTime) {
 		if (!stopped) {
 			for (SimulationTerminationListener terminationListener : terminationListeners) {
-				terminationListener.onTermination(SimulationTerminatedEvent
-						.at(stoppingTime));
+				terminationListener.onTermination(SimulationTerminatedEvent.at(stoppingTime));
 			}
 			stopped = true;
 		}
@@ -43,8 +44,11 @@ public class Simulation implements TimeoutListener {
 		stopTheSimulationAtUnlessItAlreadyStopped(event.getTicks());
 	}
 
-	public void addTerminationListener(
-			SimulationTerminationListener terminationListener) {
+	public void addTerminationListener(SimulationTerminationListener terminationListener) {
 		terminationListeners.add(terminationListener);
+	}
+
+	public Results run(Config config) {
+		return new Results(1, 12);
 	}
 }
