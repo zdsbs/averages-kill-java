@@ -27,7 +27,8 @@ public class Simulation implements TimeoutListener {
 	private void stopTheSimulationAtUnlessItAlreadyStopped(int stoppingTime) {
 		if (!stopped) {
 			for (SimulationTerminationListener terminationListener : terminationListeners) {
-				terminationListener.onTermination(SimulationTerminatedEvent.at(stoppingTime));
+				terminationListener.onTermination(SimulationTerminatedEvent
+						.at(stoppingTime));
 			}
 			stopped = true;
 		}
@@ -42,16 +43,34 @@ public class Simulation implements TimeoutListener {
 		stopTheSimulationAtUnlessItAlreadyStopped(event.getTicks());
 	}
 
-	public void addTerminationListener(SimulationTerminationListener terminationListener) {
+	public void addTerminationListener(
+			SimulationTerminationListener terminationListener) {
 		terminationListeners.add(terminationListener);
 	}
 
 	public Results run(Config config) {
-		float time = 0;
-		time += config.getCompletionTime();
+		return runSimulationForNoOverlappingWork(config);
+	}
 
-		time += config.getTransitionTime();
-		time *= config.getWorkOrders();
+	private Results runSimulationForNoOverlappingWork(Config config) {
+		float time = 0;
+		for(int i = 0; i < config.getWorkOrders() - 1; i++) {
+			time += howLongTheBottleneckIsBusy(config);
+		}
+		time += completeAWorkOrder(config);
 		return new Results(config.getWorkOrders(), time);
+	}
+
+	private int howLongTheBottleneckIsBusy(Config config) {
+		// So far, every worker is equally the bottleneck
+		return howLongAIsBusy(config);
+	}
+
+	private int howLongAIsBusy(Config config) {
+		return config.getCompletionTime() + config.getTransitionTime();
+	}
+
+	private int completeAWorkOrder(Config config) {
+		return config.getWorkers() * (config.getCompletionTime() + config.getTransitionTime());
 	}
 }

@@ -32,4 +32,12 @@ public class OneWorkerTwoPiecesOfWork {
 		assertEquals(2, results.numberOfWorkOrdersCompleted);
 		assertEquals(224f, results.simulationTimeRun, 0f);
 	}
+	
+	@Test
+	public void todays_scenario() throws Exception {
+		Config config = ConfigBuilder.workOrders(2).workers(2).transitionTime(5).completionTime(10).build();
+		Results results = new Simulation().run(config);
+		assertEquals(2, results.numberOfWorkOrdersCompleted);
+		assertEquals(45f, results.simulationTimeRun, 0f);
+	}
 }
