@@ -3,8 +3,6 @@ package org.abm.averageskill.simulation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.abm.averageskill.OneWorkerOnePieceOfWork.Config;
-import org.abm.averageskill.OneWorkerOnePieceOfWork.Results;
 import org.abm.averageskill.event.AllWorkCompletedEvent;
 import org.abm.averageskill.event.SimulationTerminatedEvent;
 import org.abm.averageskill.event.TimeoutEvent;
@@ -49,6 +47,10 @@ public class Simulation implements TimeoutListener {
 	}
 
 	public Results run(Config config) {
-		return new Results(1, 12);
+		float time = 0;
+		time += config.getCompletionTime();
+
+		time += config.getTransitionTime();
+		return new Results(config.getWorkOrders(), time);
 	}
 }
