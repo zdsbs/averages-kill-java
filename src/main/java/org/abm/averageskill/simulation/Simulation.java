@@ -51,6 +51,7 @@ public class Simulation implements TimeoutListener {
 		time += config.getCompletionTime();
 
 		time += config.getTransitionTime();
+		time *= config.getWorkOrders();
 		return new Results(config.getWorkOrders(), time);
 	}
 }
