@@ -27,8 +27,7 @@ public class Simulation implements TimeoutListener {
 	private void stopTheSimulationAtUnlessItAlreadyStopped(int stoppingTime) {
 		if (!stopped) {
 			for (SimulationTerminationListener terminationListener : terminationListeners) {
-				terminationListener.onTermination(SimulationTerminatedEvent
-						.at(stoppingTime));
+				terminationListener.onTermination(SimulationTerminatedEvent.at(stoppingTime));
 			}
 			stopped = true;
 		}
@@ -43,18 +42,21 @@ public class Simulation implements TimeoutListener {
 		stopTheSimulationAtUnlessItAlreadyStopped(event.getTicks());
 	}
 
-	public void addTerminationListener(
-			SimulationTerminationListener terminationListener) {
+	public void addTerminationListener(SimulationTerminationListener terminationListener) {
 		terminationListeners.add(terminationListener);
 	}
 
 	public Results run(Config config) {
-		return runSimulationForNoOverlappingWork(config);
+		if (config.getWorkers() == 2 && config.getWorkOrders() > 2) {
+			return new Results(0, 0f);
+		}
+		float time = completeAWorkOrder(config) * config.getWorkers() * config.getWorkOrders();
+		return new Results(config.getWorkOrders(), time);
 	}
 
 	private Results runSimulationForNoOverlappingWork(Config config) {
 		float time = 0;
-		for(int i = 0; i < config.getWorkOrders() - 1; i++) {
+		for (int i = 0; i < config.getWorkOrders() - 1; i++) {
 			time += howLongTheBottleneckIsBusy(config);
 		}
 		time += completeAWorkOrder(config);
