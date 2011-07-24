@@ -64,37 +64,47 @@ public class Simulation implements TimeoutListener {
 			workerA[0] = false;
 			workerA[1] = true;
 
-			time = transition(config, workerB, time, itemsComplete);
+			time += config.getTransitionTime();
 			workerBInbox.add(new Object());
 			numItemsInWorkerAInbox--;
 			workerA[0] = true;
 			workerA[1] = false;
-			workerBInbox.remove(0);
-			workerB[0] = true;
-			workerB[1] = false;
+
+			workerBCompletesItem(workerB, itemsComplete);
+			if (!workerBInbox.isEmpty() && workerB[0] == false) {
+				workerBInbox.remove(0);
+				workerB[0] = true;
+				workerB[1] = false;
+			}
 
 			time = complete(config, workerB, time);
 			workerA[0] = false;
 			workerA[1] = true;
 
-			time = transition(config, workerB, time, itemsComplete);
+			time += config.getTransitionTime();
 			workerBInbox.add(new Object());
 			workerA[0] = false;
 			workerA[1] = false;
-
-			workerBInbox.remove(0);
-			workerB[0] = true;
-			workerB[1] = false;
+			workerBCompletesItem(workerB, itemsComplete);
+			if (!workerBInbox.isEmpty() && workerB[0] == false) {
+				workerBInbox.remove(0);
+				workerB[0] = true;
+				workerB[1] = false;
+			}
 
 			time = complete(config, workerB, time);
 			workerA[0] = false;
 			workerA[1] = false;
 
-			time = transition(config, workerB, time, itemsComplete);
+			time += config.getTransitionTime();
 			workerA[0] = false;
 			workerA[1] = false;
-			workerB[0] = false;
-			workerB[1] = false;
+			workerBCompletesItem(workerB, itemsComplete);
+			if (!workerBInbox.isEmpty() && workerB[0] == false) {
+				workerBInbox.remove(0);
+				workerB[0] = true;
+				workerB[1] = false;
+			}
 
 			return new Results(itemsComplete.size(), time);
 		}
@@ -111,12 +121,11 @@ public class Simulation implements TimeoutListener {
 		return time;
 	}
 
-	public float transition(Config config, boolean[] workerB, float time, List<Object> itemsComplete) {
-		time += config.getTransitionTime();
+	public void workerBCompletesItem(boolean[] workerB, List<Object> itemsComplete) {
 		if (workerB[1] == true) {
+
 			itemsComplete.add(new Object());
 		}
-		return time;
 	}
 
 	private Results runSimulationForNoOverlappingWork(Config config) {
