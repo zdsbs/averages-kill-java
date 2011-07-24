@@ -113,11 +113,11 @@ public class Simulation implements TimeoutListener {
 		}
 	}
 
-	public void workerGetsANewItemToWorkOn(boolean[] workerB, List<Object> workerBInbox) {
-		if (!workerBInbox.isEmpty() && workerB[0] == false) {
+	public void workerGetsANewItemToWorkOn(boolean[] worker, List<Object> workerBInbox) {
+		if (!workerBInbox.isEmpty() && worker[0] == false) {
 			workerBInbox.remove(0);
-			workerB[0] = true;
-			workerB[1] = false;
+			worker[0] = true;
+			worker[1] = false;
 		}
 	}
 
