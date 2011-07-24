@@ -59,13 +59,13 @@ public class Simulation implements TimeoutListener {
 			}
 			List<Object> workerBInbox = new ArrayList<Object>();
 
+			// transition
 			time = 0f;
 			workerGetsANewItemToWorkOn(workerA, workerAInbox);
 
 			time += config.getCompletionTime();
-			workerA[0] = false;
-			workerA[1] = true;
-			workerBCompletesAnItem(workerB);
+			workerCompletesAnItem(workerA);
+			workerCompletesAnItem(workerB);
 
 			time += config.getTransitionTime();
 			transitionAnItem(workerA, workerBInbox);
@@ -74,9 +74,8 @@ public class Simulation implements TimeoutListener {
 			workerGetsANewItemToWorkOn(workerB, workerBInbox);
 
 			time += config.getCompletionTime();
-			workerA[0] = false;
-			workerA[1] = true;
-			workerBCompletesAnItem(workerB);
+			workerCompletesAnItem(workerA);
+			workerCompletesAnItem(workerB);
 
 			time += config.getTransitionTime();
 			transitionAnItem(workerA, workerBInbox);
@@ -85,13 +84,12 @@ public class Simulation implements TimeoutListener {
 			workerGetsANewItemToWorkOn(workerB, workerBInbox);
 
 			time += config.getCompletionTime();
-			workerA[0] = false;
-			workerA[1] = false;
-			workerBCompletesAnItem(workerB);
+			workerCompletesAnItem(workerA);
+			workerCompletesAnItem(workerB);
 
 			time += config.getTransitionTime();
 			transitionAnItem(workerA, workerBInbox);
-			workerA[0] = false;
+			workerGetsANewItemToWorkOn(workerA, workerAInbox);
 			transitionAnItem(workerB, itemsComplete);
 			workerGetsANewItemToWorkOn(workerB, workerBInbox);
 
@@ -121,10 +119,10 @@ public class Simulation implements TimeoutListener {
 		}
 	}
 
-	public void workerBCompletesAnItem(boolean[] workerB) {
-		if (workerB[0] == true) {
-			workerB[0] = false;
-			workerB[1] = true;
+	public void workerCompletesAnItem(boolean[] worker) {
+		if (worker[0] == true) {
+			worker[0] = false;
+			worker[1] = true;
 		}
 	}
 
