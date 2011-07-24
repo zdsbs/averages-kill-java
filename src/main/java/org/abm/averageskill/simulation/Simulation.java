@@ -60,9 +60,10 @@ public class Simulation implements TimeoutListener {
 			workerA[0] = true;
 			workerA[1] = false;
 
-			time = complete(config, workerB, time);
+			time += config.getCompletionTime();
 			workerA[0] = false;
 			workerA[1] = true;
+			workerBCompletesAnItem(workerB);
 
 			time += config.getTransitionTime();
 			workerBInbox.add(new Object());
@@ -71,40 +72,31 @@ public class Simulation implements TimeoutListener {
 			workerA[1] = false;
 
 			workerBCompletesItem(workerB, itemsComplete);
-			if (!workerBInbox.isEmpty() && workerB[0] == false) {
-				workerBInbox.remove(0);
-				workerB[0] = true;
-				workerB[1] = false;
-			}
+			workerBGetsANewItemToWorkOn(workerB, workerBInbox);
 
-			time = complete(config, workerB, time);
+			time += config.getCompletionTime();
 			workerA[0] = false;
 			workerA[1] = true;
+			workerBCompletesAnItem(workerB);
 
 			time += config.getTransitionTime();
 			workerBInbox.add(new Object());
 			workerA[0] = false;
 			workerA[1] = false;
 			workerBCompletesItem(workerB, itemsComplete);
-			if (!workerBInbox.isEmpty() && workerB[0] == false) {
-				workerBInbox.remove(0);
-				workerB[0] = true;
-				workerB[1] = false;
-			}
+			workerBGetsANewItemToWorkOn(workerB, workerBInbox);
 
-			time = complete(config, workerB, time);
+			time += config.getCompletionTime();
 			workerA[0] = false;
 			workerA[1] = false;
+			workerBCompletesAnItem(workerB);
 
 			time += config.getTransitionTime();
 			workerA[0] = false;
 			workerA[1] = false;
 			workerBCompletesItem(workerB, itemsComplete);
-			if (!workerBInbox.isEmpty() && workerB[0] == false) {
-				workerBInbox.remove(0);
-				workerB[0] = true;
-				workerB[1] = false;
-			}
+			workerBGetsANewItemToWorkOn(workerB, workerBInbox);
+
 			boolean workerAStillWorkingOnStuff = workerA[0] || workerA[1];
 			boolean workerBStillWorkingOnStuff = workerB[0] || workerB[1];
 			if (workerAStillWorkingOnStuff || workerBStillWorkingOnStuff) {
@@ -116,13 +108,19 @@ public class Simulation implements TimeoutListener {
 		return new Results(config.getWorkOrders(), time);
 	}
 
-	public float complete(Config config, boolean[] workerB, float time) {
-		time += config.getCompletionTime();
+	public void workerBGetsANewItemToWorkOn(boolean[] workerB, List<Object> workerBInbox) {
+		if (!workerBInbox.isEmpty() && workerB[0] == false) {
+			workerBInbox.remove(0);
+			workerB[0] = true;
+			workerB[1] = false;
+		}
+	}
+
+	public void workerBCompletesAnItem(boolean[] workerB) {
 		if (workerB[0] == true) {
 			workerB[0] = false;
 			workerB[1] = true;
 		}
-		return time;
 	}
 
 	public void workerBCompletesItem(boolean[] workerB, List<Object> itemsComplete) {
