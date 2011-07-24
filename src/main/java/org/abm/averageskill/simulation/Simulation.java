@@ -92,6 +92,7 @@ public class Simulation implements TimeoutListener {
 			workerBCompletesAnItem(workerB);
 
 			time += config.getTransitionTime();
+			workerBInbox.add(new Object());
 			workerA[0] = false;
 			workerA[1] = false;
 			workerBCompletesItem(workerB, itemsComplete);
