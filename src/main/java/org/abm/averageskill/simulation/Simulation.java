@@ -59,14 +59,10 @@ public class Simulation implements TimeoutListener {
 			numItemsInWorkerAInbox--;
 			workerA[0] = true;
 			workerA[1] = false;
-			workerB[0] = false;
-			workerB[1] = false;
 
 			time = complete(config, workerB, time);
 			workerA[0] = false;
 			workerA[1] = true;
-			workerB[0] = false;
-			workerB[1] = false;
 
 			time = transition(config, workerB, time, itemsComplete);
 			numItemsInWorkerBInbox++;
