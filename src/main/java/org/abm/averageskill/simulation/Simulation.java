@@ -62,11 +62,7 @@ public class Simulation implements TimeoutListener {
 			workerB[0] = false;
 			workerB[1] = false;
 
-			time += config.getCompletionTime();
-			if (workerB[0] == true) {
-				workerB[0] = false;
-				workerB[1] = true;
-			}
+			time = complete(config, workerB, time);
 			workerA[0] = false;
 			workerA[1] = true;
 			workerB[0] = false;
@@ -81,11 +77,7 @@ public class Simulation implements TimeoutListener {
 			workerB[0] = true;
 			workerB[1] = false;
 
-			time += config.getCompletionTime();
-			if (workerB[0] == true) {
-				workerB[0] = false;
-				workerB[1] = true;
-			}
+			time = complete(config, workerB, time);
 			workerA[0] = false;
 			workerA[1] = true;
 
@@ -97,11 +89,7 @@ public class Simulation implements TimeoutListener {
 			workerB[0] = true;
 			workerB[1] = false;
 
-			time += config.getCompletionTime();
-			if (workerB[0] == true) {
-				workerB[0] = false;
-				workerB[1] = true;
-			}
+			time = complete(config, workerB, time);
 			workerA[0] = false;
 			workerA[1] = false;
 
@@ -115,6 +103,15 @@ public class Simulation implements TimeoutListener {
 		}
 		float time = completeAWorkOrder(config) * config.getWorkers() * config.getWorkOrders();
 		return new Results(config.getWorkOrders(), time);
+	}
+
+	public float complete(Config config, boolean[] workerB, float time) {
+		time += config.getCompletionTime();
+		if (workerB[0] == true) {
+			workerB[0] = false;
+			workerB[1] = true;
+		}
+		return time;
 	}
 
 	public float transition(Config config, boolean[] workerB, float time, List<Object> itemsComplete) {
