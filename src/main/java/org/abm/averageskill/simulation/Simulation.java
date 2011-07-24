@@ -105,7 +105,6 @@ public class Simulation implements TimeoutListener {
 				workerB[0] = true;
 				workerB[1] = false;
 			}
-
 			boolean workerAStillWorkingOnStuff = workerA[0] || workerA[1];
 			boolean workerBStillWorkingOnStuff = workerB[0] || workerB[1];
 			if (workerAStillWorkingOnStuff || workerBStillWorkingOnStuff) {
@@ -128,7 +127,7 @@ public class Simulation implements TimeoutListener {
 
 	public void workerBCompletesItem(boolean[] workerB, List<Object> itemsComplete) {
 		if (workerB[1] == true) {
-
+			workerB[1] = false;
 			itemsComplete.add(new Object());
 		}
 	}
