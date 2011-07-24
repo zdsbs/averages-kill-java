@@ -68,10 +68,7 @@ public class Simulation implements TimeoutListener {
 			workerB[0] = false;
 			workerB[1] = false;
 
-			time += config.getTransitionTime();
-			if (workerB[1] == true) {
-				itemsComplete.add(new Object());
-			}
+			time = transition(config, workerB, time, itemsComplete);
 			numItemsInWorkerBInbox++;
 			numItemsInWorkerAInbox--;
 			workerA[0] = true;
@@ -86,10 +83,7 @@ public class Simulation implements TimeoutListener {
 			workerB[0] = false;
 			workerB[1] = true;
 
-			time += config.getTransitionTime();
-			if (workerB[1] == true) {
-				itemsComplete.add(new Object());
-			}
+			time = transition(config, workerB, time, itemsComplete);
 			numItemsInWorkerBInbox++;
 			workerA[0] = false;
 			workerA[1] = false;
@@ -103,10 +97,7 @@ public class Simulation implements TimeoutListener {
 			workerB[0] = false;
 			workerB[1] = true;
 
-			time += config.getTransitionTime();
-			if (workerB[1] == true) {
-				itemsComplete.add(new Object());
-			}
+			time = transition(config, workerB, time, itemsComplete);
 			workerA[0] = false;
 			workerA[1] = false;
 			workerB[0] = false;
@@ -116,6 +107,14 @@ public class Simulation implements TimeoutListener {
 		}
 		float time = completeAWorkOrder(config) * config.getWorkers() * config.getWorkOrders();
 		return new Results(config.getWorkOrders(), time);
+	}
+
+	public float transition(Config config, boolean[] workerB, float time, List<Object> itemsComplete) {
+		time += config.getTransitionTime();
+		if (workerB[1] == true) {
+			itemsComplete.add(new Object());
+		}
+		return time;
 	}
 
 	private Results runSimulationForNoOverlappingWork(Config config) {
