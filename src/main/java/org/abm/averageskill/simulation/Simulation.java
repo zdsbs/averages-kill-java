@@ -69,11 +69,11 @@ public class Simulation implements TimeoutListener {
 			workerBCompletesAnItem(workerB);
 
 			time += config.getTransitionTime();
-			workerATransitionsAnItem(workerA, workerBInbox);
+			transitionAnItem(workerA, workerBInbox);
 			workerAInbox.remove(0);
 			workerA[0] = true;
 
-			workerBTransitionsAnItem(workerB, itemsComplete);
+			transitionAnItem(workerB, itemsComplete);
 			workerBGetsANewItemToWorkOn(workerB, workerBInbox);
 
 			time += config.getCompletionTime();
@@ -82,9 +82,9 @@ public class Simulation implements TimeoutListener {
 			workerBCompletesAnItem(workerB);
 
 			time += config.getTransitionTime();
-			workerATransitionsAnItem(workerA, workerBInbox);
+			transitionAnItem(workerA, workerBInbox);
 			workerA[0] = false;
-			workerBTransitionsAnItem(workerB, itemsComplete);
+			transitionAnItem(workerB, itemsComplete);
 			workerBGetsANewItemToWorkOn(workerB, workerBInbox);
 
 			time += config.getCompletionTime();
@@ -93,9 +93,9 @@ public class Simulation implements TimeoutListener {
 			workerBCompletesAnItem(workerB);
 
 			time += config.getTransitionTime();
-			workerATransitionsAnItem(workerA, workerBInbox);
+			transitionAnItem(workerA, workerBInbox);
 			workerA[0] = false;
-			workerBTransitionsAnItem(workerB, itemsComplete);
+			transitionAnItem(workerB, itemsComplete);
 			workerBGetsANewItemToWorkOn(workerB, workerBInbox);
 
 			boolean workerAStillWorkingOnStuff = workerA[0] || workerA[1];
@@ -107,14 +107,6 @@ public class Simulation implements TimeoutListener {
 		}
 		float time = completeAWorkOrder(config) * config.getWorkers() * config.getWorkOrders();
 		return new Results(config.getWorkOrders(), time);
-	}
-
-	public void workerATransitionsAnItem(boolean[] workerA, List<Object> workerBInbox) {
-		transitionAnItem(workerA, workerBInbox);
-	}
-
-	public void workerBTransitionsAnItem(boolean[] workerB, List<Object> itemsComplete) {
-		transitionAnItem(workerB, itemsComplete);
 	}
 
 	public void transitionAnItem(boolean[] worker, List<Object> destination) {
