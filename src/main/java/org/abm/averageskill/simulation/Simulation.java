@@ -53,8 +53,8 @@ public class Simulation implements TimeoutListener {
 
 			float time = 0f;
 			int numItemsInWorkerAInbox = config.getWorkOrders();
-			int numItemsInWorkerBInbox = 0;
 			List<Object> itemsComplete = new ArrayList<Object>();
+			List<Object> workerBInbox = new ArrayList<Object>();
 			time = 0f;
 			numItemsInWorkerAInbox--;
 			workerA[0] = true;
@@ -65,11 +65,11 @@ public class Simulation implements TimeoutListener {
 			workerA[1] = true;
 
 			time = transition(config, workerB, time, itemsComplete);
-			numItemsInWorkerBInbox++;
+			workerBInbox.add(new Object());
 			numItemsInWorkerAInbox--;
 			workerA[0] = true;
 			workerA[1] = false;
-			numItemsInWorkerBInbox--;
+			workerBInbox.remove(0);
 			workerB[0] = true;
 			workerB[1] = false;
 
@@ -78,10 +78,11 @@ public class Simulation implements TimeoutListener {
 			workerA[1] = true;
 
 			time = transition(config, workerB, time, itemsComplete);
-			numItemsInWorkerBInbox++;
+			workerBInbox.add(new Object());
 			workerA[0] = false;
 			workerA[1] = false;
-			numItemsInWorkerBInbox--;
+
+			workerBInbox.remove(0);
 			workerB[0] = true;
 			workerB[1] = false;
 
