@@ -110,9 +110,17 @@ public class Simulation implements TimeoutListener {
 	}
 
 	public void workerATransitionsAnItem(boolean[] workerA, List<Object> workerBInbox) {
-		if (workerA[1] == true) {
-			workerBInbox.add(new Object());
-			workerA[1] = false;
+		transitionAnItem(workerA, workerBInbox);
+	}
+
+	public void workerBTransitionsAnItem(boolean[] workerB, List<Object> itemsComplete) {
+		transitionAnItem(workerB, itemsComplete);
+	}
+
+	public void transitionAnItem(boolean[] worker, List<Object> destination) {
+		if (worker[1] == true) {
+			worker[1] = false;
+			destination.add(new Object());
 		}
 	}
 
@@ -128,13 +136,6 @@ public class Simulation implements TimeoutListener {
 		if (workerB[0] == true) {
 			workerB[0] = false;
 			workerB[1] = true;
-		}
-	}
-
-	public void workerBTransitionsAnItem(boolean[] workerB, List<Object> itemsComplete) {
-		if (workerB[1] == true) {
-			workerB[1] = false;
-			itemsComplete.add(new Object());
 		}
 	}
 
