@@ -63,6 +63,10 @@ public class Simulation implements TimeoutListener {
 			workerB[1] = false;
 
 			time += config.getCompletionTime();
+			if (workerB[0] == true) {
+				workerB[0] = false;
+				workerB[1] = true;
+			}
 			workerA[0] = false;
 			workerA[1] = true;
 			workerB[0] = false;
