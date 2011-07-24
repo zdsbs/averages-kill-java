@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.abm.averageskill.simulation.Config;
 import org.abm.averageskill.simulation.Results;
 import org.abm.averageskill.simulation.Simulation;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TwoWorkersThreePiecesOfWork {
@@ -17,7 +18,7 @@ public class TwoWorkersThreePiecesOfWork {
 	// 45: a[] b[-,] 2
 	// 55: a[] b[,-] 2
 	// 60: a[] b[] 3
-
+	@Ignore
 	@Test
 	public void transition_time_5_completion_time_10() throws Exception {
 		Config config = ConfigBuilder.workOrders(3).workers(2).transitionTime(5).completionTime(10).build();
@@ -36,6 +37,7 @@ public class TwoWorkersThreePiecesOfWork {
 	// 43: a[] b[,-] 2
 	// 44: a[] b[] 3
 
+	@Ignore
 	@Test
 	public void transition_time_1_completion_time_10() throws Exception {
 		Config config = ConfigBuilder.workOrders(3).workers(2).transitionTime(1).completionTime(10).build();

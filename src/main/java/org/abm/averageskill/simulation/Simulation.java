@@ -52,11 +52,12 @@ public class Simulation implements TimeoutListener {
 			boolean[] workerB = new boolean[] { false, false };
 
 			float time = 0f;
-			int itemsToWorkOn = config.getWorkOrders();
+			int numItemsInWorkerAInbox = config.getWorkOrders();
+			int numItemsInWorkerBInbox = 0;
 			int itemsComplete = 0;
 
 			time = 0f;
-			itemsToWorkOn--;
+			numItemsInWorkerAInbox--;
 			workerA[0] = true;
 			workerA[1] = false;
 			workerB[0] = false;
@@ -64,49 +65,47 @@ public class Simulation implements TimeoutListener {
 			itemsComplete = 0;
 
 			time += config.getCompletionTime();
-
 			workerA[0] = false;
 			workerA[1] = true;
 			workerB[0] = false;
 			workerB[1] = false;
 
 			time += config.getTransitionTime();
-
-			itemsToWorkOn--;
+			numItemsInWorkerBInbox++;
+			numItemsInWorkerAInbox--;
 			workerA[0] = true;
 			workerA[1] = false;
+			numItemsInWorkerBInbox--;
 			workerB[0] = true;
 			workerB[1] = false;
 
 			time += config.getCompletionTime();
-
 			workerA[0] = false;
 			workerA[1] = true;
 			workerB[0] = false;
 			workerB[1] = true;
 
 			time += config.getTransitionTime();
-
+			itemsComplete++;
+			numItemsInWorkerBInbox++;
 			workerA[0] = false;
 			workerA[1] = false;
+			numItemsInWorkerBInbox--;
 			workerB[0] = true;
 			workerB[1] = false;
-			itemsComplete++;
 
 			time += config.getCompletionTime();
-
 			workerA[0] = false;
 			workerA[1] = false;
 			workerB[0] = false;
 			workerB[1] = true;
 
 			time += config.getTransitionTime();
-
+			itemsComplete++;
 			workerA[0] = false;
 			workerA[1] = false;
 			workerB[0] = false;
 			workerB[1] = false;
-			itemsComplete++;
 
 			return new Results(itemsComplete, time);
 		}
