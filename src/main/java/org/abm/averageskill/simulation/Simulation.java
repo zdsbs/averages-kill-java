@@ -60,8 +60,7 @@ public class Simulation implements TimeoutListener {
 			List<Object> workerBInbox = new ArrayList<Object>();
 
 			time = 0f;
-			workerAInbox.remove(0);
-			workerA[0] = true;
+			workerGetsANewItemToWorkOn(workerA, workerAInbox);
 
 			time += config.getCompletionTime();
 			workerA[0] = false;
@@ -70,10 +69,9 @@ public class Simulation implements TimeoutListener {
 
 			time += config.getTransitionTime();
 			transitionAnItem(workerA, workerBInbox);
-			workerAInbox.remove(0);
-			workerA[0] = true;
+			workerGetsANewItemToWorkOn(workerA, workerAInbox);
 			transitionAnItem(workerB, itemsComplete);
-			workerBGetsANewItemToWorkOn(workerB, workerBInbox);
+			workerGetsANewItemToWorkOn(workerB, workerBInbox);
 
 			time += config.getCompletionTime();
 			workerA[0] = false;
@@ -82,10 +80,9 @@ public class Simulation implements TimeoutListener {
 
 			time += config.getTransitionTime();
 			transitionAnItem(workerA, workerBInbox);
-			workerAInbox.remove(0);
-			workerA[0] = true;
+			workerGetsANewItemToWorkOn(workerA, workerAInbox);
 			transitionAnItem(workerB, itemsComplete);
-			workerBGetsANewItemToWorkOn(workerB, workerBInbox);
+			workerGetsANewItemToWorkOn(workerB, workerBInbox);
 
 			time += config.getCompletionTime();
 			workerA[0] = false;
@@ -96,7 +93,7 @@ public class Simulation implements TimeoutListener {
 			transitionAnItem(workerA, workerBInbox);
 			workerA[0] = false;
 			transitionAnItem(workerB, itemsComplete);
-			workerBGetsANewItemToWorkOn(workerB, workerBInbox);
+			workerGetsANewItemToWorkOn(workerB, workerBInbox);
 
 			boolean workerAStillWorkingOnStuff = workerA[0] || workerA[1];
 			boolean workerBStillWorkingOnStuff = workerB[0] || workerB[1];
@@ -116,7 +113,7 @@ public class Simulation implements TimeoutListener {
 		}
 	}
 
-	public void workerBGetsANewItemToWorkOn(boolean[] workerB, List<Object> workerBInbox) {
+	public void workerGetsANewItemToWorkOn(boolean[] workerB, List<Object> workerBInbox) {
 		if (!workerBInbox.isEmpty() && workerB[0] == false) {
 			workerBInbox.remove(0);
 			workerB[0] = true;
