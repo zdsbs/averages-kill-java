@@ -106,6 +106,11 @@ public class Simulation implements TimeoutListener {
 				workerB[1] = false;
 			}
 
+			boolean workerAStillWorkingOnStuff = workerA[0] || workerA[1];
+			boolean workerBStillWorkingOnStuff = workerB[0] || workerB[1];
+			if (workerAStillWorkingOnStuff || workerBStillWorkingOnStuff) {
+				throw new RuntimeException("everyone whould be done");
+			}
 			return new Results(itemsComplete.size(), time);
 		}
 		float time = completeAWorkOrder(config) * config.getWorkers() * config.getWorkOrders();
