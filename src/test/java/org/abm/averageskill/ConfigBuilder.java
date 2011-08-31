@@ -4,35 +4,27 @@ import org.abm.averageskill.simulation.Config;
 
 public class ConfigBuilder {
 	private final int workOrders;
-	private final int workers;
-	private final int transitionTime;
-	private final int completionTime;
+	private final WorkerConfig[] workerConfigs;
 	
-	public ConfigBuilder(int workOrders, int workers, int transitionTime, int completionTime) {
+	public ConfigBuilder(int workOrders, WorkerConfig[] workerConfigs) {
 		this.workOrders = workOrders;
-		this.workers = workers;
-		this.transitionTime = transitionTime;
-		this.completionTime = completionTime;
+		this.workerConfigs = workerConfigs;
 	}
-
+	
 	public static ConfigBuilder workOrders(int workOrders) {
-		return new ConfigBuilder(workOrders, 0, 0,0);
+		return new ConfigBuilder(workOrders, null);
 	}
-
-	public ConfigBuilder workers(int workers) {
-		return new ConfigBuilder(workOrders, workers, transitionTime,completionTime);
+	
+	public ConfigBuilder workers(WorkerConfig... workerConfigs) {
+		return new ConfigBuilder(workOrders, workerConfigs);
 	}
-
-	public ConfigBuilder transitionTime(int transitionTime) {
-		return new ConfigBuilder(workOrders, workers, transitionTime,completionTime);
-	}
-
-	public ConfigBuilder completionTime(int completionTime) {
-		return new ConfigBuilder(workOrders, workers, transitionTime,completionTime);
-	}
-
+	
 	public Config build() {
-		return new Config(workOrders, workers, transitionTime,completionTime);
+		WorkerConfig workerConfigProtoType = workerConfigs[0];
+		return new Config(workOrders, workerConfigs.length, workerConfigProtoType.getTransitionTime(), workerConfigProtoType.getCompletionTime());
 	}
-
+	
+	public static WorkerConfig worker(int completionTime, int transitionTime) {
+		return new WorkerConfig(completionTime, transitionTime);
+	}
 }
